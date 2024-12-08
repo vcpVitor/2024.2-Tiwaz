@@ -64,3 +64,9 @@
 ## **Encerramento**
 - A reunião foi encerrada às 15h02 com o consenso sobre as prioridades e próximos passos para desenvolvimento do aplicativo.  
 - A próxima reunião foi sugerida para 7 de dezembro de 2024, para revisão das atualizações no backlog.
+
+
+
+| Versão | Data | Descrição da Alteração | Nome(s) Integrante(s) |
+| :----: | :--: | :--------------------: | :-------------------: |
+| 1.0 | 08/12/2024 | Criação da Ata | Joao Pedro Ferreira Moraes |
