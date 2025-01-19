@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image } from "react-native";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import CheckBox from 'react-native-checkbox';
 
 export default function CadastroEstoque({ navigation }) {
   // State para os campos do formulário
   const [produto, setProduto] = useState("");
-  const [quantidade, setQuantidade] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [dataAdicao, setDataAdicao] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [unidadeGrama, setUnidadeGrama] = useState(false);
+  const [unidadeQuilo, setUnidadeQuilo] = useState(false);
+  const [unidadeMl, setUnidadeMl] = useState(false);
+  const [unidadeL, setUnidadeL] = useState(false);
+  const [custo, setCusto] = useState("");
+  const [dataCompra, setDataCompra] = useState("");
+  const [quantidade, setQuantidade] = useState("");
 
   // Função para verificar se todos os campos estão preenchidos
   const isFormValid = () => {
-    return produto && quantidade && descricao && dataAdicao && categoria;
+    return produto && descricao && (unidadeGrama || unidadeQuilo || unidadeMl || unidadeL) && custo && dataCompra && quantidade;
   };
 
   const handleSave = () => {
@@ -21,12 +26,12 @@ export default function CadastroEstoque({ navigation }) {
       navigation.goBack();
     } else {
       Alert.alert("Erro", "Preencha todos os campos antes de salvar!");
+      console.log(produto,descricao,unidadeGrama,unidadeQuilo,unidadeMl,unidadeL,custo,dataCompra,quantidade);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Cadastro de Estoque</Text>
 
       {/* Imagem */}
       <Image
@@ -47,6 +52,55 @@ export default function CadastroEstoque({ navigation }) {
         />
       </View>
 
+      {/* Campo Validade */}
+      <View style={styles.inputGroup}>
+        <Ionicons name="document-text" size={24} color="#4CAF50" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Validade"
+          placeholderTextColor="#aaa"
+          value={descricao}
+          onChangeText={setDescricao}
+        />
+      </View>
+
+      {/* Seção de Unidade de Medida */}
+      <Text style={styles.subHeader}>Selecione a Unidade de Medida:</Text>
+      <View style={styles.checkboxContainer}>
+        <View style={styles.checkboxGroup}>
+          <CheckBox
+            value={unidadeGrama}
+            onValueChange={setUnidadeGrama}
+            tintColors={{ true: "#000", false: "#000" }}
+            label = "g"
+          />
+        </View>
+        <View style={styles.checkboxGroup}>
+          <CheckBox
+            value={unidadeQuilo}
+            onValueChange={setUnidadeQuilo}
+            tintColors={{ true: "#4CAF50", false: "#aaa" }}
+            label = "Kg"
+          />
+        </View>
+        <View style={styles.checkboxGroup}>
+          <CheckBox
+            value={unidadeMl}
+            onValueChange={setUnidadeMl}
+            tintColors={{ true: "#4CAF50", false: "#aaa" }}
+            label = "Ml"
+          />
+        </View>
+        <View style={styles.checkboxGroup}>
+          <CheckBox
+            value={unidadeL}
+            onValueChange={setUnidadeL}
+            tintColors={{ true: "#4CAF50", false: "#aaa" }}
+            label = "L"
+          />
+        </View>
+      </View>
+
       {/* Campo Quantidade */}
       <View style={styles.inputGroup}>
         <Ionicons name="stats-chart" size={24} color="#4CAF50" style={styles.icon} />
@@ -60,39 +114,28 @@ export default function CadastroEstoque({ navigation }) {
         />
       </View>
 
-      {/* Campo Descrição */}
+      {/* Campo Custo */}
       <View style={styles.inputGroup}>
-        <Ionicons name="document-text" size={24} color="#4CAF50" style={styles.icon} />
+        <Ionicons name="cash" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Descrição"
+          placeholder="Custo do Produto"
           placeholderTextColor="#aaa"
-          value={descricao}
-          onChangeText={setDescricao}
+          value={custo}
+          onChangeText={setCusto}
+          keyboardType="numeric"
         />
       </View>
 
-      {/* Campo Data de Adição */}
+      {/* Campo Data da Compra */}
       <View style={styles.inputGroup}>
         <Ionicons name="calendar" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Data de Adição (DD/MM/AAAA)"
+          placeholder="Data da Compra (DD/MM/AAAA)"
           placeholderTextColor="#aaa"
-          value={dataAdicao}
-          onChangeText={setDataAdicao}
-        />
-      </View>
-
-      {/* Campo Categoria */}
-      <View style={styles.inputGroup}>
-        <Ionicons name="list" size={24} color="#4CAF50" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Categoria"
-          placeholderTextColor="#aaa"
-          value={categoria}
-          onChangeText={setCategoria}
+          value={dataCompra}
+          onChangeText={setDataCompra}
         />
       </View>
 
@@ -119,7 +162,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#F1F8E9",
+    backgroundColor: "#FFFFFF",
   },
   header: {
     fontSize: 26,
@@ -130,6 +173,12 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 0, 0, 0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  subHeader: {
+    fontSize: 18,
+    color: "#4CAF50",
+    marginBottom: 10,
+    fontWeight: "bold",
   },
   image: {
     width: "100%",
@@ -145,7 +194,7 @@ const styles = StyleSheet.create({
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#D9D9D9",
     borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -204,5 +253,15 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  checkboxContainer: {
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  checkboxGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
   },
 });

@@ -1,4 +1,5 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/Inicial'; 
@@ -11,6 +12,8 @@ import Relatorios from '../screens/Relatorios';
 import VizualizarPlantacoes from '../screens/VizualizarPlantacoes';
 import VizualizarEstoque from '../screens/VizualizarEstoque';
 import CadastroColheita from '../screens/CadastroColheita';
+import PrevisaoTempo from '../screens/PrevisaoDoTempo';
+import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +27,21 @@ const Navigation = () => {
           component={HomeScreen} 
           options={{ headerShown: false }} // Sem cabeçalho padrão
         />
+        <Stack.Screen 
+          name="PrevisaoTempo" 
+          component={PrevisaoTempo} 
+          options={{
+            title: "Previsão do Tempo",
+            headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#4FC3F7", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#4FC3F7" />
+              </TouchableOpacity>
+            ),
+          }} 
+        />
+
         {/* TELA CADASTRO PLANTACAO*/}
         <Stack.Screen 
           name="CadastroPlantacao" 
@@ -52,7 +70,7 @@ const Navigation = () => {
         <Stack.Screen 
           name="GerenciarFinancas" 
           component={GerenciarFinancas} 
-          options={{ headerShown: false }} // Sem cabeçalho padrão
+          options={{ title: "Gerenciar Financas " }} // Sem cabeçalho padrão
         />
         {/* TELA RELATORIOS*/}
         <Stack.Screen 
@@ -64,13 +82,31 @@ const Navigation = () => {
         <Stack.Screen 
           name="VizualizarPlantacoes" 
           component={VizualizarPlantacoes} 
-          options={{ headerShown: false }} // Sem cabeçalho padrão
+          options={{
+            title: "Gerenciamento de Plantio",
+            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#000", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }} 
         />
         {/* TELA VIZUALIZAR ESTOQUE*/}
         <Stack.Screen 
           name="VizualizarEstoque" 
           component={VizualizarEstoque} 
-          options={{ headerShown: false }} // Sem cabeçalho padrão
+          options={{
+            title: "Estoque",
+            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#000", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }} 
         />
         {/* TELA Cadastar Colheita*/}
         <Stack.Screen 

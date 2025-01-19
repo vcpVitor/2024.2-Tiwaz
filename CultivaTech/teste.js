@@ -50,7 +50,6 @@ export default function HomeScreen({ navigation }) {
     },
   ];
 
-  {/* Função que simula a atualização dos dados da tela. */}
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -59,7 +58,6 @@ export default function HomeScreen({ navigation }) {
     }, 1500);
   }, []);
 
-  {/* Executa uma lógica sempre que a tela do componente recebe o foco, ou seja, quando o usuário navega para essa tela. */}
   useFocusEffect(
     React.useCallback(() => {
       console.log("Tela recebeu foco - atualizando dados...");
@@ -77,7 +75,6 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  {/*Formata números em valores monetários no padrão brasileiro (BRL, R$).*/}
   const formatCurrency = (value) => {
     return value.toLocaleString("pt-BR", {
       style: "currency",
@@ -112,7 +109,7 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.weatherContainer}
-            onPress={() => navigation.navigate("PrevisaoTempo")}
+            onPress={() => navigation.navigate("PrevisaoDetalhada")}
           >
             <Ionicons name="cloud" size={40} color="#4FC3F7" />
             <View style={styles.weatherDetails}>
@@ -128,20 +125,22 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
 
           <View style={styles.summaryContainer}>
-            <View
+            <TouchableOpacity
               style={styles.summaryItem}
+              onPress={() => navigation.navigate("EstatisticasPlantacoes")}
             >
               <Ionicons name="leaf" size={30} color="#388E3C" />
               <View>
-                <Text style={styles.summaryLabel}>Total de Plantações</Text>
+                <Text style={styles.summaryLabel}>Total Plantações</Text>
                 <Text style={styles.summaryText}>
                   {statistics.totalPlantations}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
 
-            <View
+            <TouchableOpacity
               style={styles.summaryItem}
+              onPress={() => navigation.navigate("RelatorioFinanceiro")}
             >
               <Ionicons name="cash" size={30} color="#388E3C" />
               <View>
@@ -150,23 +149,28 @@ export default function HomeScreen({ navigation }) {
                   {formatCurrency(statistics.totalProfit)}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Plantações Recentes</Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("VizualizarPlantacoes")}
+                onPress={() => navigation.navigate("TodasPlantacoes")}
               >
                 <Text style={styles.seeAllText}>Ver Todas</Text>
               </TouchableOpacity>
             </View>
 
             {recentPlantations.map((plantation) => (
-              <View
+              <TouchableOpacity
                 key={plantation.id}
                 style={[styles.plantationItem, { padding: 12 }]}
+                onPress={() =>
+                  navigation.navigate("DetalhesPlantacao", {
+                    id: plantation.id,
+                  })
+                }
                 activeOpacity={0.7}
               >
                 <View style={styles.plantationInfo}>
@@ -198,14 +202,14 @@ export default function HomeScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
 
           <View style={styles.quickActionsContainer}>
             <TouchableOpacity
               style={[styles.actionButton, styles.actionButtonGerenciarPlantacoes]}
-              onPress={() => navigation.navigate("VizualizarPlantacoes")}
+              onPress={() => navigation.navigate("GerenciarPlantacoes")}
               activeOpacity={0.8}
             >
               <Ionicons name="leaf" size={28} color="#fff" />
@@ -215,7 +219,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.doubleActionsContainer}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionButtonEstoque]}
-                onPress={() => navigation.navigate("VizualizarEstoque")}
+                onPress={() => navigation.navigate("GerenciarEstoque")}
                 activeOpacity={0.8}
               >
                 <Ionicons name="cube" size={28} color="#fff" />
@@ -224,7 +228,7 @@ export default function HomeScreen({ navigation }) {
 
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionButtonCustos]}
-                onPress={() => navigation.navigate("GerenciarFinancas")}
+                onPress={() => navigation.navigate("GerenciarCustos")}
                 activeOpacity={0.8}
               >
                 <Ionicons name="calculator" size={28} color="#fff" />
@@ -352,7 +356,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.97)",
     borderRadius: 15,
     padding: 20,
-    marginBottom: 15,
+    marginBottom: 20,
     ...Platform.select({
       ios: {
         shadowColor: "#000",

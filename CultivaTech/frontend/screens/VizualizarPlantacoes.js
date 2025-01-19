@@ -1,166 +1,197 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
-export default function VizualizarPlantacoes({ navigation }) {
-  const plantacoes = [
+export default function GerenciarPlantacoes({ navigation }) {
+  const [plantacoes, setPlantacoes] = useState([
     {
       id: 1,
-      nome: "Plantação de Milho",
-      cultura: "Milho",
-      dataPlantio: "01/10/2024",
-      quantidadePlantas: "20000 plantas",
+      name: "Milho Safrinha",
+      type: "Grão",
+      plantingDate: "10/01/2025",
+      measure: "2000 hectares",
+      cost: "R$ 150.000,00",
     },
     {
       id: 2,
-      nome: "Plantação de Soja",
-      cultura: "Soja",
-      dataPlantio: "15/09/2024",
-      quantidadePlantas: "15000 plantas",
+      name: "Tomate Cereja",
+      type: "Hortaliça",
+      plantingDate: "05/01/2025",
+      measure: "5 hectares",
+      cost: "R$ 20.000,00",
     },
     {
       id: 3,
-      nome: "Plantação de Café",
-      cultura: "Café",
-      dataPlantio: "20/08/2024",
-      quantidadePlantas: "5000 plantas",
+      name: "Soja Convencional",
+      type: "Grão",
+      plantingDate: "08/01/2025",
+      measure: "15 hectares",
+      cost: "R$ 50.000,00",
     },
-  ];
+  ]);
+
+  const handleAction = (action, id) => {
+    console.log(`${action} da plantação com ID ${id}`);
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Resumo das Plantações</Text>
-
-      {plantacoes.map((plantacao) => (
-        <View key={plantacao.id} style={styles.plantacaoCard}>
-          <View style={styles.plantacaoInfo}>
-            <Text style={styles.plantacaoTitle}>{plantacao.nome}</Text>
-            <Text style={styles.plantacaoText}>Cultura: {plantacao.cultura}</Text>
-            <Text style={styles.plantacaoText}>Data de Plantio: {plantacao.dataPlantio}</Text>
-            <Text style={styles.plantacaoText}>Quantidade: {plantacao.quantidadePlantas}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {plantacoes.map((plantacao) => (
+          <View key={plantacao.id} style={styles.plantacaoContainer}>
+            <Text style={styles.plantacaoName}>{plantacao.name}</Text>
+            <View style={styles.plantacaoDetails}>
+              <View style={styles.detailRow}>
+                <Ionicons name="leaf" size={20} color="#388E3C" />
+                <Text style={styles.detailText}>{plantacao.type}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Ionicons name="expand" size={20} color="#388E3C" />
+                <Text style={styles.detailText}>Área Plantada: {plantacao.measure}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Ionicons name="calendar" size={20} color="#388E3C" />
+                <Text style={styles.detailText}>Data do Plantio: {plantacao.plantingDate}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <MaterialIcons name="attach-money" size={20} color="#388E3C" />
+                <Text style={styles.detailText}>Custo Inicial: {plantacao.cost}</Text>
+              </View>
+            </View>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                onPress={() => handleAction("Colheita", plantacao.id)}
+                style={styles.actionButton}
+              >
+                <FontAwesome5 name="tractor" size={25} color="#388E3C" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Insumos", plantacao.id)}
+                style={styles.actionButton}
+              >
+                <Ionicons name="nutrition" size={25} color="#388E3C" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Custos", plantacao.id)}
+                style={styles.actionButton}
+              >
+                <MaterialIcons name="money" size={25} color="#388E3C" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Editar", plantacao.id)}
+                style={styles.actionButton}
+              >
+                <Ionicons name="pencil" size={25} color="#388E3C" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Fechamento", plantacao.id)}
+                style={styles.actionButtonFechamento}
+              >
+                <Ionicons name="lock" size={25} color="#FFCA28" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Excluir", plantacao.id)}
+                style={styles.actionButtonExcluir}
+              >
+                <Ionicons name="trash" size={25} color="#E53935" />
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("EditarPlantacao", { id: plantacao.id })}
-            >
-              <Ionicons name="create" size={20} color="#fff" />
-              <Text style={styles.buttonText}>Editar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("RelatoriosPlantacao", { id: plantacao.id })}
-            >
-              <FontAwesome5 name="file-alt" size={20} color="#fff" />
-              <Text style={styles.buttonText}>Relatório</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("AdicionarInsumos", { id: plantacao.id })}
-            >
-              <FontAwesome5 name="plus" size={20} color="#fff" />
-              <Text style={styles.buttonText}>Adicionar Insumos</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ))}
+        ))}
+      </ScrollView>
 
       <TouchableOpacity
-        style={styles.addPlantacaoButton}
+        style={styles.newPlantacaoButton}
         onPress={() => navigation.navigate("CadastroPlantacao")}
       >
-        <Ionicons name="add" size={20} color="#fff" />
-        <Text style={styles.addPlantacaoButtonText}>Cadastrar Nova Plantação</Text>
+        <Ionicons name="add" size={28} color="#fff" />
+        <Text style={styles.newPlantacaoButtonText}>Cadastrar Plantação</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
   container: {
     flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#E8F5E9",
+    padding: 15,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    textAlign: "center",
+
+  plantacaoContainer: {
+    backgroundColor: "#E0E0E0",
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 20,
   },
-  plantacaoCard: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    borderLeftWidth: 5,
-    borderLeftColor: "#4CAF50",
-  },
-  plantacaoInfo: {
-    marginBottom: 15,
-  },
-  plantacaoTitle: {
-    fontSize: 18,
+  plantacaoName: {
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
+    color: "#000",
+    marginBottom: 10,
   },
-  plantacaoText: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 3,
+  plantacaoDetails: {
+    marginTop: 5,
   },
-  buttonsContainer: {
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 18,
+    color: "#000",
+    marginLeft: 10,
+  },
+  actionButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 15,
   },
-  button: {
+  actionButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E0E0E0",
+    padding: 10,
+    borderRadius: 10,
+    width: 50,
+  },
+  actionButtonFechamento: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E0E0E0",
+    padding: 10,
+    borderRadius: 10,
+    width: 50,
+  },
+  actionButtonExcluir: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E0E0E0",
+    padding: 10,
+    borderRadius: 10,
+    width: 50,
+  },
+  newPlantacaoButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#4CAF50",
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginLeft: 5,
-  },
-  addPlantacaoButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#4CAF50",
-    borderRadius: 8,
+    backgroundColor: "#388E3C",
     paddingVertical: 15,
-    marginTop: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    borderRadius: 10,
+    margin: 20,
   },
-  addPlantacaoButtonText: {
+  newPlantacaoButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
