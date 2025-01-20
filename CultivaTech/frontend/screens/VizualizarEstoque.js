@@ -1,149 +1,173 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 
-export default function VizualizarEstoque({ navigation }) {
-  const itensEstoque = [
+export default function GerenciarEstoque({ navigation }) {
+  const [estoque, setEstoque] = useState([
     {
       id: 1,
-      nome: "Adubo Orgânico",
-      quantidade: "200 kg",
-      descricao: "Adubo para crescimento das plantas",
-      dataAdicao: "01/12/2024",
-      categoria: "Fertilizante",
+      name: "Fertilizante NPK",
+      quantidade: "500 kg",
+      validade: "01/01/2026",
+      custo: "R$ 2.000,00",
+      dataCompra: "15/01/2025",
     },
     {
       id: 2,
-      nome: "Sementes de Milho",
-      quantidade: "50 sacos",
-      descricao: "Sementes para plantio em grande escala",
-      dataAdicao: "25/11/2024",
-      categoria: "Sementes",
+      name: "Sementes de Milho",
+      quantidade: "200 sacas",
+      validade: "01/01/2027",
+      custo: "R$ 5.000,00",
+      dataCompra: "10/01/2025",
     },
     {
       id: 3,
-      nome: "Herbicida XYZ",
-      quantidade: "20 litros",
-      descricao: "Controle de ervas daninhas",
-      dataAdicao: "20/11/2024",
-      categoria: "Herbicida",
+      name: "Defensivo Agrícola",
+      quantidade: "100 litros",
+      validade: "01/12/2025",
+      custo: "R$ 1.500,00",
+      dataCompra: "05/01/2025",
     },
-  ];
+  ]);
+
+  const handleAction = (action, id) => {
+    console.log(`${action} do item com ID ${id}`);
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Estoque</Text>
-
-      {itensEstoque.map((item) => (
-        <View key={item.id} style={styles.itemCard}>
-          <View style={styles.itemInfo}>
-            <Text style={styles.itemTitle}>{item.nome}</Text>
-            <Text style={styles.itemText}>Quantidade: {item.quantidade}</Text>
-            <Text style={styles.itemText}>Descrição: {item.descricao}</Text>
-            <Text style={styles.itemText}>Data de Adição: {item.dataAdicao}</Text>
-            <Text style={styles.itemText}>Categoria: {item.categoria}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {estoque.map((item) => (
+          <View key={item.id} style={styles.itemContainer}>
+            <Text style={styles.itemName}>{item.name}</Text>
+            <View style={styles.itemDetails}>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Quantidade: </Text>
+                  {item.quantidade}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Validade: </Text>
+                  {item.validade}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Custo: </Text>
+                  {item.custo}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailText}>
+                  <Text style={styles.boldText}>Data da Compra: </Text>
+                  {item.dataCompra}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                onPress={() => handleAction("Editar", item.id)}
+                style={styles.actionButton}
+              >
+                <Text style={styles.actionButtonText}>Editar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleAction("Excluir", item.id)}
+                style={[styles.actionButton, styles.deleteButton]}
+              >
+                <Text style={styles.actionButtonText}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("EditarItem", { id: item.id })}
-          >
-            <Ionicons name="create" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Editar</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+        ))}
+      </ScrollView>
 
       <TouchableOpacity
-        style={styles.addItemButton}
-        onPress={() => navigation.navigate("AdicionarItem")}
+        style={styles.newItemButton}
+        onPress={() => navigation.navigate("CadastroEstoque")}
       >
-        <Ionicons name="add" size={24} color="#fff" />
-        <Text style={styles.addItemButtonText}>Adicionar Novo Item</Text>
+        <Text style={styles.newItemButtonText}>Cadastrar Novo Item</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
   container: {
     flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#E8F5E9",
+    padding: 15,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    textAlign: "center",
+  itemContainer: {
+    backgroundColor: "#E0E0E0",
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 20,
   },
-  itemCard: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    borderLeftWidth: 5,
-    borderLeftColor: "#4CAF50",
-  },
-  itemInfo: {
-    marginBottom: 15,
-  },
-  itemTitle: {
-    fontSize: 18,
+  itemName: {
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
+    color: "#000",
+    marginBottom: 10,
   },
-  itemText: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 3,
+  itemDetails: {
+    marginTop: 5,
   },
-  button: {
+  detailRow: {
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  boldText: {
+    fontWeight: "bold",
+  },
+  actionButtons: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+  },
+  actionButton: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#4CAF50",
-    borderRadius: 5,
+    backgroundColor: "#439D46",
     paddingVertical: 10,
     paddingHorizontal: 15,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 5,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 14,
+  actionButtonText: {
+    fontSize: 19,
     fontWeight: "bold",
-    marginLeft: 5,
+    color: "#D9D9D9",
   },
-  addItemButton: {
-    flexDirection: "row",
+  deleteButton: {
+    backgroundColor: "#F42310",
+  },
+  newItemButton: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#4CAF50",
-    borderRadius: 8,
+    backgroundColor: "#388E3C",
     paddingVertical: 15,
-    marginTop: 20,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    borderRadius: 10,
+    margin: 20,
   },
-  addItemButtonText: {
+  newItemButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 10,
   },
 });
