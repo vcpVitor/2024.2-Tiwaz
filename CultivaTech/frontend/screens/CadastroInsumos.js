@@ -1,23 +1,37 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import CheckBox from 'react-native-checkbox';
+import CheckBox from "react-native-checkbox";
 
-export default function CadastroEstoque({ navigation }) {
-  const [produto, setProduto] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState(""); // Novo estado para armazenar a unidade selecionada
-  const [custo, setCusto] = useState("");
-  const [dataCompra, setDataCompra] = useState("");
+export default function AdicionarInsumo({ navigation }) {
+  const insumosDisponiveis = [
+    { id: 1, nome: "Adubo NPK", medida: "Kg" },
+    { id: 2, nome: "Fertilizante Foliar", medida: "L" },
+    { id: 3, nome: "Calcário", medida: "Kg" },
+  ];
+
+  const [insumoSelecionado, setInsumoSelecionado] = useState("");
+  const [nome, setNome] = useState("");
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
   const [quantidade, setQuantidade] = useState("");
+  const [valor, setValor] = useState("");
 
   const isFormValid = () => {
-    return produto && descricao && unidadeSelecionada && custo && dataCompra && quantidade;
+    return insumoSelecionado && nome && unidadeSelecionada && quantidade && valor;
   };
 
   const handleSave = () => {
     if (isFormValid()) {
-      Alert.alert("Sucesso", "Estoque cadastrado com sucesso!");
+      Alert.alert("Sucesso", "Insumo adicionado com sucesso!");
       navigation.goBack();
     } else {
       Alert.alert("Erro", "Preencha todos os campos antes de salvar!");
@@ -25,39 +39,43 @@ export default function CadastroEstoque({ navigation }) {
   };
 
   const handleCheckboxChange = (unidade) => {
-    setUnidadeSelecionada(unidade); // Altera a unidade selecionada
+    setUnidadeSelecionada(unidade);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image
-        source={require("../assets/images/estoque.jpg")}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <View style={styles.headerContainer}>
+        <Image
+          source={require("../assets/images/Insumos.jpg")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <Text style={styles.header}>Adicionar Insumo</Text>
+      </View>
+
       <View style={styles.inputGroup}>
-        <Ionicons name="cube" size={24} color="#4CAF50" style={styles.icon} />
+        <Ionicons name="search" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Nome do Produto"
+          placeholder="Selecione o Insumo do Estoque"
           placeholderTextColor="#000"
-          value={produto}
-          onChangeText={setProduto}
+          value={insumoSelecionado}
+          onChangeText={setInsumoSelecionado}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Ionicons name="document-text" size={24} color="#4CAF50" style={styles.icon} />
+        <Ionicons name="leaf" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Validade (DD/MM/AAAA)"
+          placeholder="Nome do Insumo"
           placeholderTextColor="#000"
-          value={descricao}
-          onChangeText={setDescricao}
+          value={nome}
+          onChangeText={setNome}
         />
       </View>
 
-      <Text style={styles.subHeader}>Selecione a Unidade de Medida:</Text>
+      <Text style={styles.subHeader}>Unidade de Medida:</Text>
       <View style={styles.checkboxContainer}>
         <View style={styles.checkboxGroup}>
           <CheckBox
@@ -98,10 +116,15 @@ export default function CadastroEstoque({ navigation }) {
       </View>
 
       <View style={styles.inputGroup}>
-        <Ionicons name="stats-chart" size={24} color="#4CAF50" style={styles.icon} />
+        <Ionicons
+          name="stats-chart"
+          size={24}
+          color="#4CAF50"
+          style={styles.icon}
+        />
         <TextInput
           style={styles.input}
-          placeholder= {`Quantidade (${unidadeSelecionada})`}
+          placeholder={`Quantidade Utilizada (${unidadeSelecionada || "selecione a unidade"})`}
           placeholderTextColor="#000"
           value={quantidade}
           onChangeText={setQuantidade}
@@ -113,28 +136,17 @@ export default function CadastroEstoque({ navigation }) {
         <Ionicons name="cash" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Custo do Produto"
+          placeholder="Valor Total (R$)"
           placeholderTextColor="#000"
-          value={custo}
-          onChangeText={setCusto}
+          value={valor}
+          onChangeText={setValor}
           keyboardType="numeric"
-        />
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Ionicons name="calendar" size={24} color="#4CAF50" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Data da Compra (DD/MM/AAAA)"
-          placeholderTextColor="#000"
-          value={dataCompra}
-          onChangeText={setDataCompra}
         />
       </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Salvar</Text>
+          <Text style={styles.saveButtonText}>Adicionar</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.cancelButton}
@@ -153,17 +165,26 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#FFFFFF",
   },
-  subHeader: {
-    fontSize: 18,
-    color: "#4CAF50",
-    marginBottom: 10,
-    fontWeight: "bold",
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 20,
   },
   image: {
     width: "100%",
     height: 200,
     borderRadius: 10,
     marginBottom: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#4CAF50",
+  },
+  subHeader: {
+    fontSize: 18,
+    color: "#4CAF50",
+    marginBottom: 10,
+    fontWeight: "bold",
   },
   inputGroup: {
     flexDirection: "row",

@@ -1,18 +1,29 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image } from "react-native";
+import CheckBox from 'react-native-checkbox';
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 
 export default function CadastroPlantacao({ navigation }) {
-  // State para os campos do formulário
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState("");
+  const [isArea, setIsArea] = useState(true);
+  const [isQuantidade, setIsQuantidade] = useState(false);
+  const [areaPlantada, setAreaPlantada] = useState("");
   const [dataPlantio, setDataPlantio] = useState("");
-  const [quantidade, setQuantidade] = useState("");
-  const [localizacao, setLocalizacao] = useState("");
+  const [custoInicial, setCustoInicial] = useState("");
 
-  // Função para verificar se todos os campos estão preenchidos
+  const handleAreaChange = () => {
+    setIsArea(true);
+    setIsQuantidade(false);
+  };
+
+  const handleQuantidadeChange = () => {
+    setIsArea(false);
+    setIsQuantidade(true);
+  };
+
   const isFormValid = () => {
-    return nome && tipo && dataPlantio && quantidade && localizacao;
+    return nome && tipo && areaPlantada && dataPlantio && custoInicial;
   };
 
   const handleSave = () => {
@@ -26,85 +37,98 @@ export default function CadastroPlantacao({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Cadastro de Plantio</Text>
-
-      {/* Imagem de Plantação */}
       <Image
-        source={require("../assets/images/plantacao2.jpg")} 
+        source={require("../assets/images/plantacao2.jpg")}
         style={styles.image}
         resizeMode="cover"
       />
 
-      {/* Campo Nome da Plantação */}
       <View style={styles.inputGroup}>
         <Ionicons name="leaf" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
           placeholder="Nome da Plantação"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#000"
           value={nome}
           onChangeText={setNome}
         />
       </View>
 
-      {/* Campo Tipo de Cultura */}
       <View style={styles.inputGroup}>
         <FontAwesome5 name="seedling" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
           placeholder="Tipo de Cultura (ex: Milho, Soja)"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#000"
           value={tipo}
           onChangeText={setTipo}
         />
       </View>
 
-      {/* Campo Data de Plantio */}
+      <View style={styles.checkboxGroup}>
+        <Text style={styles.checkboxLabel}>Medida:</Text>
+        <View style={styles.checkboxRow}>
+          <View style={styles.checkboxItem}>
+            <CheckBox
+              label="Área"
+              checked={isArea}
+              onChange={handleAreaChange}
+              containerStyle={styles.checkboxContainer}
+              labelStyle={styles.checkboxText}
+            />
+          </View>
+          <View style={styles.checkboxItem}>
+            <CheckBox
+              label="Quantidade"
+              checked={isQuantidade}
+              onChange={handleQuantidadeChange}
+              containerStyle={styles.checkboxContainer}
+              labelStyle={styles.checkboxText}
+            />
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Ionicons name="expand" size={24} color="#4CAF50" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder={isQuantidade ? "Quantidade Plantada" : "Área Plantada (hectares)"}
+          placeholderTextColor="#000"
+          value={areaPlantada}
+          onChangeText={setAreaPlantada}
+          keyboardType="numeric"
+        />
+      </View>
+
       <View style={styles.inputGroup}>
         <Ionicons name="calendar" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
           placeholder="Data de Plantio (dd/mm/aaaa)"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#000"
           value={dataPlantio}
           onChangeText={setDataPlantio}
           keyboardType="numeric"
         />
       </View>
 
-      {/* Campo Quantidade de Plantas */}
       <View style={styles.inputGroup}>
-        <Ionicons name="stats-chart" size={24} color="#4CAF50" style={styles.icon} />
+        <Ionicons name="cash" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Quantidade de Plantas"
-          placeholderTextColor="#aaa"
-          value={quantidade}
-          onChangeText={setQuantidade}
+          placeholder="Custo Inicial (R$)"
+          placeholderTextColor="#000"
+          value={custoInicial}
+          onChangeText={setCustoInicial}
           keyboardType="numeric"
         />
       </View>
 
-      {/* Campo Localização */}
-      <View style={styles.inputGroup}>
-        <Ionicons name="location" size={24} color="#4CAF50" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Localização do Plantio"
-          placeholderTextColor="#aaa"
-          value={localizacao}
-          onChangeText={setLocalizacao}
-        />
-      </View>
-
-      {/* Botões de Ação */}
       <View style={styles.buttonContainer}>
-        {/* Botão Salvar */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Salvar</Text>
         </TouchableOpacity>
-
-        {/* Botão Cancelar */}
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => navigation.goBack()}
@@ -120,7 +144,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#F1F8E9",
+    backgroundColor: "#FFFFFF",
   },
   header: {
     fontSize: 26,
@@ -128,34 +152,21 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     marginBottom: 20,
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   image: {
     width: "100%",
     height: 200,
     borderRadius: 10,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#D9D9D9",
     borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   icon: {
     marginRight: 10,
@@ -163,7 +174,33 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: "#000",
+  },
+  checkboxGroup: {
+    marginBottom: 15,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4CAF50",
+    marginBottom: 10,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkboxItem: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkboxContainer: {
+    borderWidth: 0,
+    backgroundColor: "transparent",
+  },
+  checkboxText: {
+    fontSize: 16,
+    color: "#000",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -177,11 +214,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
     marginHorizontal: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   saveButtonText: {
     color: "#fff",
@@ -195,11 +227,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
     marginHorizontal: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   cancelButtonText: {
     color: "#fff",

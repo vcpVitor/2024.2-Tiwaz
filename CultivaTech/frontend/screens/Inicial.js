@@ -224,7 +224,7 @@ export default function HomeScreen({ navigation }) {
 
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionButtonCustos]}
-                onPress={() => navigation.navigate("GerenciarFinancas")}
+                onPress={() => navigation.navigate("VizualizarCustos")}
                 activeOpacity={0.8}
               >
                 <Ionicons name="calculator" size={28} color="#fff" />
