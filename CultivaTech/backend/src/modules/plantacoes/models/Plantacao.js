@@ -2,11 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/database');
 
 const Plantacao = sequelize.define('Plantacao', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -15,16 +10,22 @@ const Plantacao = sequelize.define('Plantacao', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  area: {
+  areaPlantada: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: true, // Opcional
+  },
+  quantidadePlantada: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Opcional
   },
   dataPlantio: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-}, {
-  timestamps: true,
+  custoInicial: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
 });
 
 module.exports = Plantacao;
