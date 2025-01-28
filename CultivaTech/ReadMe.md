@@ -1,5 +1,6 @@
 # Bibliotecas
 ## Front End
+- npm install expo
 - npm install axios
 - npm install @react-navigation/native @react-navigation/stack
 - npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-vector-icons
