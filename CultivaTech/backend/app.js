@@ -2,12 +2,13 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const cors = require('cors');
-app.use(cors());
 
 
+const custosRoutes = require('./src/modules/custos/routes/custoRoutes.js');
 const plantacaoRoutes = require('./src/modules/plantacoes/routes/plantacaoRoutes.js');
 const sequelize = require('./src/config/database.js');
 
+app.use(cors());
 // Middleware para processar JSON no corpo da requisição
 app.use(express.json());
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rotas
 app.use('/api/plantacoes', plantacaoRoutes);
+app.use('/api/custos', custosRoutes);
 
 // Inicializar o banco de dados
 sequelize.sync({ force: true }) // Use force: true apenas para recriar tabelas

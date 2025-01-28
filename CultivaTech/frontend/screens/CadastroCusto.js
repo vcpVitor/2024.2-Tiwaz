@@ -1,53 +1,86 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image,KeyboardAvoidingView,Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
+import { cadastrarCusto, atualizarCusto } from "../services/custos";
 
 export default function CadastrarCustos({ route, navigation }) {
-  const [nomeCusto, setNomeCusto] = useState("");
-  const [dataCusto, setDataCusto] = useState("");
-  const [tipoCusto, setTipoCusto] = useState(null);
-  const [descricao, setDescricao] = useState("");
-  const [valor, setValor] = useState("");
+  const custoExistente = route.params?.custo;
+
+  const formatDateForBackend = (date) => {
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = date.match(regex);
+    if (match) {
+      const [, day, month, year] = match;
+      return `${year}-${month}-${day}`;
+    }
+    return null; // Retorna null se a data for inválida
+  };
+
+
+  const [nome, setNome] = useState(custoExistente?.nome || "");
+  const [data, setData] = useState(custoExistente? formatDateForBackend(custoExistente.data) : "");
+  const [descricao, setDescricao] = useState(custoExistente?.descricao || "");
+  const [valorCusto, setValorCusto] = useState(
+    custoExistente?.valorCusto?.toString() || ""
+  );
+
   const [open, setOpen] = useState(false);
+  const [tipoCusto, setTipoCusto] = useState(custoExistente?.tipoCusto || null);
   const [items, setItems] = useState([
     { label: "Maquinário", value: "Maquinario" },
     { label: "Funcionários", value: "Funcionarios" },
     { label: "Outro", value: "Outro" },
   ]);
 
-  const { custo } = route.params || {}; // Se houver um custo, preenche os campos
 
-  useEffect(() => {
-    if (custo) {
-      setNomeCusto(custo.nomeCusto);
-      setDataCusto(custo.dataCusto);
-      setTipoCusto(custo.tipoCusto);
-      setDescricao(custo.descricao);
-      setValor(custo.valor);
+  const handleSave = async () => {
+    if (!nome || !data || !tipoCusto || !descricao || !valorCusto) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      return;
     }
-  }, [custo]);
 
+    const dataFormatada = formatDateForBackend(data);
+    if (!dataFormatada) {
+      Alert.alert("Erro", "Por favor, insira uma data válida no formato DD/MM/AAAA.");
+      return;
+    }
 
-  const isFormValid = () => {
-    return nomeCusto && dataCusto && tipoCusto && descricao && valor;
-  };
+    const dados = {
+      nome,
+      data: dataFormatada,
+      tipoCusto,
+      descricao,
+      valorCusto,
+    };
 
-  const handleSave = () => {
-    if (isFormValid()) {
-      Alert.alert(
-        "Sucesso",
-        custo 
-        ? "Custo editado  com sucesso!"
-        : "Novo custo cadastrado!");
-      navigation.goBack();
-    } else {
-      Alert.alert("Erro", "Preencha todos os campos antes de salvar!");
+    try {
+      if (custoExistente) {
+        await atualizarCusto(custoExistente.id, dados);
+        Alert.alert("Sucesso", "Custo atualizado com sucesso!");
+      } else {
+        await cadastrarCusto(dados);
+        Alert.alert("Sucesso", "Custo cadastrado com sucesso!");
+      }
+      navigation.navigate("VizualizarCustos", { reload: true });
+    } catch (error) {
+      console.error("Erro ao salvar custo:", error.response?.data || error.message);
+      Alert.alert("Erro", error.response?.data?.error || "Não foi possível salvar o custo.");
     }
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
@@ -56,14 +89,15 @@ export default function CadastrarCustos({ route, navigation }) {
         style={styles.image}
         resizeMode="cover"
       />
+
       <View style={styles.inputGroup}>
         <Ionicons name="cash-outline" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
           placeholder="Nome do Custo"
           placeholderTextColor="#000"
-          value={nomeCusto}
-          onChangeText={setNomeCusto}
+          value={nome}
+          onChangeText={setNome}
         />
       </View>
 
@@ -73,8 +107,8 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Data do Custo (DD/MM/AAAA)"
           placeholderTextColor="#000"
-          value={dataCusto}
-          onChangeText={setDataCusto}
+          value={data}
+          onChangeText={setData}
         />
       </View>
 
@@ -90,8 +124,8 @@ export default function CadastrarCustos({ route, navigation }) {
         style={styles.dropdown}
         dropDownContainerStyle={styles.dropdownContainer}
         textStyle={{
-          fontSize: 16, // Aumenta o tamanho do texto
-          color: "#000", // Define a cor do texto
+          fontSize: 16,
+          color: "#000",
         }}
       />
 
@@ -112,8 +146,8 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Valor do Custo"
           placeholderTextColor="#000"
-          value={valor}
-          onChangeText={setValor}
+          value={valorCusto}
+          onChangeText={setValorCusto}
           keyboardType="numeric"
         />
       </View>
@@ -135,15 +169,9 @@ export default function CadastrarCustos({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     padding: 20,
     backgroundColor: "#FFFFFF",
-  },
-  subHeader: {
-    fontSize: 18,
-    color: "#4CAF50",
-    marginBottom: 10,
-    fontWeight: "bold",
   },
   image: {
     width: "100%",
@@ -173,7 +201,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 0,
     marginBottom: 15,
-    paddingVertical: 20,
   },
   dropdownContainer: {
     backgroundColor: "#D9D9D9",

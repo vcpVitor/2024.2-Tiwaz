@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,67 +8,65 @@ import {
   SafeAreaView,
   Modal,
 } from "react-native";
+import {getCustos, deleteCusto} from "../services/custos";
 
 export default function GerenciarCustos({ navigation }) {
-  const [custos, setCustos] = useState([
-    {
-      id: 1,
-      nomeCusto: "Máquinas",
-      dataCusto: "15/01/2020",
-      tipoCusto: "Maquinário",
-      descricao: "Trator agrícola",
-      valor: "R$ 120.000,00",
-    },
-    {
-      id: 2,
-      nomeCusto: "Funcionários",
-      dataCusto: "01/01/2025",
-      tipoCusto: "Maquinário",
-      descricao: "Salário mensal da equipe",
-      valor: "R$ 25.000,00",
-    },
-    {
-      id: 3,
-      nomeCusto: "Insumos",
-      dataCusto: "10/01/2025",
-      tipoCusto: "Maquinário",
-      descricao: "Adubos e fertilizantes",
-      valor: "R$ 8.000,00",
-    },
-    {
-      id: 4,
-      nomeCusto: "Outros",
-      dataCusto: "05/01/2025",
-      tipoCusto: "Maquinário",
-      descricao: "Manutenção de equipamentos",
-      valor: "R$ 3.500,00",
-    },
-  ]);
-
+  const [custos, setCustos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
 
-  const handleDelete = () => {
-    setCustos(custos.filter((item) => item.id !== selectedId));
-    setModalVisible(false);
+  const fetchCustos = async () => {
+    setLoading(true);
+    try {
+      const data = await getCustos();
+      const dataformata = data.map((item) => ({
+        ...item,
+        data: new Date(item.data).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+      }));
+      setCustos(dataformata); // Atualiza o estado com os custos da API
+    } catch (error) {
+      console.error("Erro ao buscar custos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustos();
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await deleteCusto(selectedId); // Faz o DELETE na API
+      fetchCustos(); // Recarrega a lista após exclusão
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Erro ao excluir custo:", error);
+    }
   };
 
   const openModal = (id) => {
     setSelectedId(id);
     setModalVisible(true);
   };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         {custos.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
-            <Text style={styles.itemName}>{item.nomeCusto}</Text>
+            <Text style={styles.itemName}>{item.nome}</Text>
             <View style={styles.itemDetails}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Data: </Text>
-                  {item.dataCusto}
+                  {item.data}
                 </Text>
               </View>
               <View style={styles.detailRow}>
@@ -86,17 +84,23 @@ export default function GerenciarCustos({ navigation }) {
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Valor: </Text>
-                  {item.valor}
+                  {item.valorCusto}
                 </Text>
               </View>
             </View>
             <View style={styles.actionButtons}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("CadastroCusto", { custo: item })}
+                onPress={() => navigation.navigate("CadastroCusto", { 
+                  custo: {
+                    ...item,
+                    valorCusto: item.valorCusto.toString(),
+                  },
+                  })}
                 style={styles.actionButton}
               >
                 <Text style={styles.actionButtonText}>Editar</Text>
               </TouchableOpacity>
+              
               <TouchableOpacity
                 onPress={() => openModal(item.id)}
                 style={[styles.actionButton, styles.deleteButton]}
