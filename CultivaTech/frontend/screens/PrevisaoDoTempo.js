@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,76 +9,86 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
-  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as Location from 'expo-location';
-
-const API_URL = "http://seu-backend.com/api/weather";
 
 export default function WeatherForecastScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [forecastData, setForecastData] = useState([]);
-  const [currentWeather, setCurrentWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const fetchWeatherData = async (location) => {
-    try {
-      const response = await fetch(`${API_URL}/forecast?location=${location}`);
-      const data = await response.json();
-      
-      const current = data.find(item => item.isCurrent);
-      const forecast = data.filter(item => !item.isCurrent);
-      
-      setCurrentWeather(current);
-      setForecastData(forecast);
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível carregar os dados do clima");
-    } finally {
-      setLoading(false);
+  const forecastData = [
+    {
+      day: "Hoje",
+      date: "19/01/2025",
+      condition: "Ensolarado",
+      temperature: { min: 22, max: 30 },
+      rainProbability: 5,
+    },
+    {
+      day: "Amanhã",
+      date: "20/01/2025",
+      condition: "Parcialmente Nublado",
+      temperature: { min: 20, max: 28 },
+      rainProbability: 20,
+    },
+    {
+      day: "Sábado",
+      date: "21/01/2025",
+      condition: "Chuvoso",
+      temperature: { min: 18, max: 25 },
+      rainProbability: 80,
+    },
+    {
+      day: "Domingo",
+      date: "22/01/2025",
+      condition: "Ensolarado",
+      temperature: { min: 21, max: 29 },
+      rainProbability: 0,
+    },
+    {
+      day: "Segunda",
+      date: "23/01/2025",
+      condition: "Nublado",
+      temperature: { min: 19, max: 27 },
+      rainProbability: 60,
+    },
+    {
+      day: "Terça",
+      date: "24/01/2025",
+      condition: "Ensolarado",
+      temperature: { min: 21, max: 30 },
+      rainProbability: 10,
+    },
+    {
+      day: "Quarta",
+      date: "25/01/2025",
+      condition: "Parcialmente Nublado",
+      temperature: { min: 23, max: 31 },
+      rainProbability: 15,
+    },
+  ];
+
+  const getWeatherIcon = (condition) => {
+    switch (condition) {
+      case "Ensolarado":
+        return "sunny";
+      case "Parcialmente Nublado":
+        return "partly-sunny";
+      case "Chuvoso":
+        return "rainy";
+      case "Nublado":
+        return "cloud";
+      default:
+        return "cloud";
     }
   };
 
-  const handleRefresh = async () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    try {
-      const location = await getLocation();
-      await fetchWeatherData(location);
+    setTimeout(() => {
+      setRefreshing(false);
       Alert.alert("Atualizado", "Dados atualizados com sucesso!");
-    } catch (error) {
-      Alert.alert("Erro", error.message);
-    }
-    setRefreshing(false);
-  };
-
-  const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') throw new Error('Permissão de localização negada');
-
-    let location = await Location.getCurrentPositionAsync({});
-    return `${location.coords.latitude},${location.coords.longitude}`;
-  };
-
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const location = await getLocation();
-        await fetchWeatherData(location);
-      } catch (error) {
-        Alert.alert("Erro", error.message);
-        setLoading(false);
-      }
-    };
-    initialize();
+    }, 1500);
   }, []);
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#388E3C" />
-      </View>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -89,28 +99,24 @@ export default function WeatherForecastScreen() {
         <ScrollView
           contentContainerStyle={styles.container}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          {/* Componente de Clima Atual Atualizado */}
-          {currentWeather && (
-            <View style={styles.currentWeatherContainer}>
-              <Ionicons name={getWeatherIcon(currentWeather.condition)} size={64} color="#FFC107" />
-              <View style={styles.weatherDetails}>
-                <Text style={styles.currentCondition}>{currentWeather.condition}</Text>
-                <Text style={styles.currentTemperature}>
-                  {currentWeather.temperatureMax}°C
-                </Text>
-                <Text style={styles.weatherSubtext}>
-                  Próxima chuva: {currentWeather.rainProbability}%
-                </Text>
-              </View>
-            </View>
-          )}
 
-          {/* Lista de Previsão Atualizada */}
+
+          <View style={styles.currentWeatherContainer}>
+            <Ionicons name="sunny" size={64} color="#FFC107" />
+            <View style={styles.weatherDetails}>
+              <Text style={styles.currentCondition}>Ensolarado</Text>
+              <Text style={styles.currentTemperature}>25°C</Text>
+              <Text style={styles.weatherSubtext}>
+                Próxima chuva em: 2 dias
+              </Text>
+            </View>
+          </View>
+
           <View style={styles.forecastContainer}>
-            <Text style={styles.forecastTitle}>Próximos 5 Dias</Text>
+            <Text style={styles.forecastTitle}>Próximos 7 Dias</Text>
             {forecastData.map((day, index) => (
               <View key={index} style={styles.forecastItem}>
                 <Ionicons
@@ -120,11 +126,11 @@ export default function WeatherForecastScreen() {
                 />
                 <View style={styles.forecastDetails}>
                   <Text style={styles.forecastDay}>
-                    {new Date(day.date).toLocaleDateString('pt-BR', { weekday: 'long' })}
+                    {day.day} - {day.date}
                   </Text>
                   <Text style={styles.forecastCondition}>{day.condition}</Text>
                   <Text style={styles.forecastTemperature}>
-                    {day.temperatureMin}°C - {day.temperatureMax}°C
+                    {day.temperature.min}°C - {day.temperature.max}°C
                   </Text>
                   <Text style={styles.forecastRain}>
                     Chance de chuva: {day.rainProbability}%
@@ -138,7 +144,6 @@ export default function WeatherForecastScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   safeArea: {
