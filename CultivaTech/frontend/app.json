@@ -23,6 +23,14 @@
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir CultivaTech a usar sua localização"
+        }
+      ]
+    ]
   }
 }
