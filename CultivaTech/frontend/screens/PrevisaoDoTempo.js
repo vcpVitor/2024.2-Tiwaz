@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,86 +9,129 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import * as Location from "expo-location";
+
 
 export default function WeatherForecastScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [weatherData, setWeatherData] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const forecastData = [
-    {
-      day: "Hoje",
-      date: "19/01/2025",
-      condition: "Ensolarado",
-      temperature: { min: 22, max: 30 },
-      rainProbability: 5,
-    },
-    {
-      day: "Amanhã",
-      date: "20/01/2025",
-      condition: "Parcialmente Nublado",
-      temperature: { min: 20, max: 28 },
-      rainProbability: 20,
-    },
-    {
-      day: "Sábado",
-      date: "21/01/2025",
-      condition: "Chuvoso",
-      temperature: { min: 18, max: 25 },
-      rainProbability: 80,
-    },
-    {
-      day: "Domingo",
-      date: "22/01/2025",
-      condition: "Ensolarado",
-      temperature: { min: 21, max: 29 },
-      rainProbability: 0,
-    },
-    {
-      day: "Segunda",
-      date: "23/01/2025",
-      condition: "Nublado",
-      temperature: { min: 19, max: 27 },
-      rainProbability: 60,
-    },
-    {
-      day: "Terça",
-      date: "24/01/2025",
-      condition: "Ensolarado",
-      temperature: { min: 21, max: 30 },
-      rainProbability: 10,
-    },
-    {
-      day: "Quarta",
-      date: "25/01/2025",
-      condition: "Parcialmente Nublado",
-      temperature: { min: 23, max: 31 },
-      rainProbability: 15,
-    },
-  ];
+  const API_URL = "http://10.0.2.2:3000/api/weather/"; // para rodar no celular "http://IP DO PC QUE ESTA RODANDO O BACK:3000/api/weather/"
 
-  const getWeatherIcon = (condition) => {
-    switch (condition) {
-      case "Ensolarado":
-        return "sunny";
-      case "Parcialmente Nublado":
-        return "partly-sunny";
-      case "Chuvoso":
-        return "rainy";
-      case "Nublado":
-        return "cloud";
-      default:
-        return "cloud";
+  const loadLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permissão para acesso à localização negada");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location.coords);
+  };
+
+  const translateWeekday = (weekday) => {
+    const days = {
+      Sun: "Domingo", Mon: "Segunda", Tue: "Terça",
+      Wed: "Quarta", Thu: "Quinta", Fri: "Sexta", Sat: "Sábado"
+    };
+    return days[weekday] || weekday;
+  };
+
+  const fetchWeatherData = async () => {
+    try {
+      if (!location) return;
+
+      const response = await axios.get(API_URL, {
+        params: {
+          lat: location.latitude,
+          lon: location.longitude
+        }
+      });
+      const processedData = {
+        current: {
+          condition: response.data.current.description,
+          temperature: response.data.current.temperature.temp,
+          humidity: response.data.current.humidity,
+          rainProbability: response.data.current.rainProbability,
+        },
+        location: response.data.location,
+        forecast: response.data.forecast.map((day, index) => ({
+          day: index === 0 ? "Hoje" : translateWeekday(day.weekday),
+          date: day.date,
+          condition: day.condition,
+          temperature: { min: day.temperature.min, max: day.temperature.max },
+          rainProbability: day.rainProbability,
+          humidity: day.humidity
+        }))
+      };
+
+      setWeatherData(processedData);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível obter os dados meteorológicos");
     }
   };
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
+    try {
+      await loadLocation();
+      await fetchWeatherData();
       Alert.alert("Atualizado", "Dados atualizados com sucesso!");
-    }, 1500);
+    } catch (error) {
+      Alert.alert("Erro", "Falha ao atualizar dados");
+    }
+    setRefreshing(false);
+  }, [location]);
+
+  useEffect(() => {
+    loadLocation();
   }, []);
+
+  useEffect(() => {
+    if (location) {
+      fetchWeatherData();
+    }
+  }, [location]);
+
+  const getWeatherIcon = (condition) => {
+    switch (condition.toLowerCase()) {
+      case "tempo limpo":
+        return ["sunny", "#FFD700"]; 
+      case "tempo nublado":
+        return ["cloud", "#90A4AE"]; 
+      case "chuva":
+        return ["rainy", "#2196F3"];
+      case "chuvas esparsas":
+        return ["partly-sunny", "#64B5F6"];
+      case "chuviscos":
+        return ["rainy-outline", "#81D4FA"];
+      default:
+        return ["cloud", "#90A4AE"];
+    }
+  };
+
+  if (errorMsg) {
+    return (
+      <View style={styles.container}>
+        <Text>{errorMsg}</Text>
+      </View>
+    );
+  }
+
+  if (!weatherData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Carregando dados meteorológicos...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -102,27 +145,36 @@ export default function WeatherForecastScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-
-
           <View style={styles.currentWeatherContainer}>
-            <Ionicons name="sunny" size={64} color="#FFC107" />
+            <Ionicons
+              style={styles.iconWrapper} 
+              name={getWeatherIcon(weatherData.current.condition)[0]} 
+              size={64} 
+              color={getWeatherIcon(weatherData.current.condition)[1]}
+            />
             <View style={styles.weatherDetails}>
-              <Text style={styles.currentCondition}>Ensolarado</Text>
-              <Text style={styles.currentTemperature}>25°C</Text>
+              <Text style={styles.locationName}>{weatherData.location}</Text>
+              <Text style={styles.currentCondition}>
+                {weatherData.current.condition}
+              </Text>
+              <Text style={styles.currentTemperature}>
+                {Math.round(weatherData.current.temperature)}°C
+              </Text>
+              <Text style={styles.weatherHumidity}>Umidade: {weatherData.current.humidity}%</Text>
               <Text style={styles.weatherSubtext}>
-                Próxima chuva em: 2 dias
+                Probabilidade de chuva: {weatherData.current.rainProbability}%
               </Text>
             </View>
           </View>
 
           <View style={styles.forecastContainer}>
-            <Text style={styles.forecastTitle}>Próximos 7 Dias</Text>
-            {forecastData.map((day, index) => (
+            <Text style={styles.forecastTitle}>Próximos 10 Dias</Text>
+            {weatherData.forecast.map((day, index) => (
               <View key={index} style={styles.forecastItem}>
                 <Ionicons
-                  name={getWeatherIcon(day.condition)}
+                  name={getWeatherIcon(day.condition)[0]}
                   size={32}
-                  color="#FFC107"
+                  color={getWeatherIcon(day.condition)[1]}
                 />
                 <View style={styles.forecastDetails}>
                   <Text style={styles.forecastDay}>
@@ -134,6 +186,9 @@ export default function WeatherForecastScreen() {
                   </Text>
                   <Text style={styles.forecastRain}>
                     Chance de chuva: {day.rainProbability}%
+                  </Text>
+                  <Text style={styles.forecastRain}>
+                    Umidade: {day.humidity}%
                   </Text>
                 </View>
               </View>
@@ -158,33 +213,12 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
-  headerContainer: {
-    marginBottom: 20,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#ffffff",
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  subHeader: {
-    fontSize: 16,
-    color: "#ffffff",
-    textAlign: "center",
-    marginTop: 5,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
   currentWeatherContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 20,
+    padding: 25,
     borderRadius: 15,
     marginBottom: 20,
     ...Platform.select({
@@ -199,8 +233,15 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  iconWrapper: {
+    marginRight: 15,
+  },
+  locationName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#0288D1",
+  },
   weatherDetails: {
-    marginLeft: 15,
     alignItems: "flex-start",
   },
   currentCondition: {
@@ -209,19 +250,24 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   currentTemperature: {
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: "bold",
     color: "#388E3C",
     marginVertical: 5,
   },
+  weatherHumidity: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 5,
+  },
   weatherSubtext: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666",
   },
   forecastContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 15,
-    padding: 15,
+    padding: 20,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -235,7 +281,7 @@ const styles = StyleSheet.create({
     }),
   },
   forecastTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 15,
@@ -252,7 +298,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   forecastDay: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#388E3C",
   },
@@ -265,7 +311,19 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   forecastRain: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#0288D1",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0288D1", // Fundo azul para dar um toque climático
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginTop: 20,
   },
 });
