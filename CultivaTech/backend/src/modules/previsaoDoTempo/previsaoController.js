@@ -30,6 +30,7 @@ const previsaoController = {
 
             // Pega os resultados da previsao que a api deu 
             const forecastResults = forecastResponse.data.results;
+            console.log(forecastResponse.data.results);
             
             const forecastAtual = {
                 temperature: {
