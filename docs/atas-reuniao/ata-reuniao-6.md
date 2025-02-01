@@ -1,17 +1,26 @@
-# Ata da Reunião 1 – Apresentação do Tema
+# Ata da Reunião 6 – Validação do FrontEnd
 
 **Data:** 31/01/2025 
 **Horário:** 20:00  
 **Local:** Teams  
 **Participantes:**  
+
 - Wildemberg Sales Da Silva Junior (Cliente)
+  
 - Gabriel Basto Bertolazi (Monitor)
+  
 - Mateus de Sousa Soares
+  
 - Thales Germano Vargas Lima
+  
 - Luis Felipe de Souza Braga
+  
 - Felipe Henrique Oliveira Sousa
+
 - Joao Pedro Ferreira Moraes
+  
 - Davi Emanuel Ribeiro de Oliveira
+  
 ---
 
 ### **Pauta**
