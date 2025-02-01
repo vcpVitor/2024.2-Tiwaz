@@ -6,7 +6,18 @@ import {cadastrarProdutoEstoque, editarProdutoEstoque} from "../services/estoque
 
 export default function CadastroEstoque({ route, navigation }) {
   const produtoExistente = route.params?.produto;
-  
+
+  const formatDateForBackend = (date) => {
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = date.match(regex);
+    if (match) {
+      const [, day, month, year] = match;
+      return `${day}/${month}/${year}`;
+    }
+    return null; // Retorna null se a data for inválida
+  };
+
+
   const [nomeDoProduto, setNomeDoProduto] = useState(produtoExistente?.nomeDoProduto || "");
   const [dataValidade, setDataValidade] = useState(produtoExistente?.dataValidade || "");
   const [unidadeMedida, setUnidadeMedida] = useState(produtoExistente?.unidadeMedida || ""); // Novo estado para armazenar a unidade selecionada
@@ -18,20 +29,32 @@ export default function CadastroEstoque({ route, navigation }) {
   const isFormValid = () => {
     return nomeDoProduto && unidadeMedida && quantidadeProdutoEstoque && custoProduto && dataCompraProduto;
   };
-
+  
   const handleSave = async () => {
     if (!isFormValid()) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
+    const dataFormatadaValidade = formatDateForBackend(dataValidade);
+    if (!dataFormatadaValidade) {
+      Alert.alert("Erro", "Por favor, insira uma data de vencimento válida no formato DD/MM/AAAA.");
+      return;
+    }
+  
+    const dataFormatadaCompra = formatDateForBackend(dataCompraProduto);
+    if (!dataFormatadaCompra) {
+      Alert.alert("Erro", "Por favor, insira uma data de compra válida no formato DD/MM/AAAA.");
+      return;
+    }
+
     const dados = {
       nomeDoProduto,
-      dataValidade,
+      dataValidade: dataFormatadaValidade,
       unidadeMedida,
-      quantidadeProdutoEstoque,
-      custoProduto,
-      dataCompraProduto,
+      quantidadeProdutoEstoque: parseFloat(quantidadeProdutoEstoque),
+      custoProduto: parseFloat(custoProduto),
+      dataCompraProduto: dataFormatadaCompra,
     };
 
     try {

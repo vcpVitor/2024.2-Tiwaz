@@ -53,30 +53,30 @@ export default function GerenciarCustos({ navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {custos.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
-            <Text style={styles.itemName}>{item.nome}</Text>
+            <Text style={styles.itemName}>{item.nomeDoCusto}</Text>
             <View style={styles.itemDetails}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Data: </Text>
-                  {item.data}
+                  {item.dataDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Tipo: </Text>
-                  {item.tipoCusto}
+                  {item.tipoDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Descrição: </Text>
-                  {item.descricao}
+                  {item.descricaoDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Valor: </Text>
-                  {item.valorCusto}
+                  {item.valorDoCusto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </Text>
               </View>
             </View>
@@ -85,7 +85,7 @@ export default function GerenciarCustos({ navigation }) {
                 onPress={() => navigation.navigate("CadastroCusto", { 
                   custo: {
                     ...item,
-                    valorCusto: item.valorCusto.toString(),
+                    valorCusto: item.valorDoCusto.toString(),
                   },
                   })}
                 style={styles.actionButton}
