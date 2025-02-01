@@ -4,16 +4,16 @@
 **Horário:** 14h00  
 **Local:** Teams  
 **Participantes:**  
-- Wildemberg Sales Da Silva Junior (Cliente)  
-- Artur Cardoso da Silva  
-- Mateus de Sousa Soares 
-- Thales Germano Vargas Lima
-- Luis Felipe de Souza Braga
-- Felipe Henrique Oliveira Sousa
-- Joao Pedro Ferreira Moraes
-- Cauã Reis de Freitas
-- Davi Emanuel Ribeiro de Oliveira
-- Gabriel Basto Bertolazi
+Wildemberg Sales Da Silva Junior (Cliente)  
+Artur Cardoso da Silva  
+Mateus de Sousa Soares 
+Thales Germano Vargas Lima
+Luis Felipe de Souza Braga
+Felipe Henrique Oliveira Sousa
+Joao Pedro Ferreira Moraes
+Cauã Reis de Freitas
+Davi Emanuel Ribeiro de Oliveira
+Gabriel Basto Bertolazi
 ---
 
 ## **Pauta**
