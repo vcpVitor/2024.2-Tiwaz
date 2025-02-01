@@ -29,7 +29,7 @@ Nesse cenário, surge a possibilidade de implementar uma solução tecnológica 
 Você pode clonar o repositório do projeto com o seguinte comando:
 
 ```bash
-git clone https://github.com/unb-mds/2023-2-SuaGradeUnB.git
+git clone https://github.com/FGA0138-MDS-Ajax/2024.2-Tiwaz.git
 ```
 
 ### 💻 Tecnologias Utilizadas
