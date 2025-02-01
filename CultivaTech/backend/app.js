@@ -8,6 +8,8 @@ const custosRoutes = require('./src/modules/custos/routes/custoRoutes.js');
 const colheitaRoutes = require('./src/modules/colheitas/routes/colheitaRoutes.js');
 const plantacaoRoutes = require('./src/modules/plantacoes/routes/plantacaoRoutes.js');
 const previsaoRoutes = require('./src/modules/previsaoDoTempo/previsaoRoutes.js');
+const estoqueRoutes = require('./src/modules/estoque/routes/estoqueRoutes.js');
+
 const sequelize = require('./src/config/database.js');
 
 app.use(cors());
@@ -22,10 +24,11 @@ app.use('/api/plantacoes', plantacaoRoutes);
 app.use('/api/custos', custosRoutes);
 app.use('/api/colheitas', colheitaRoutes);
 app.use('/api/weather', previsaoRoutes);
+app.use('/api/estoque', estoqueRoutes);
 
 
 // Inicializar o banco de dados
-sequelize.sync({ force: true }) // Use force: true apenas para recriar tabelas
+sequelize.sync() // Use force: true apenas para recriar tabelas
   .then(() => {
     console.log('Banco de dados sincronizado!');
   })

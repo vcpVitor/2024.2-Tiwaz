@@ -2,30 +2,56 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CheckBox from 'react-native-checkbox';
+import {cadastrarProdutoEstoque, editarProdutoEstoque} from "../services/estoque";
 
-export default function CadastroEstoque({ navigation }) {
-  const [produto, setProduto] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState(""); // Novo estado para armazenar a unidade selecionada
-  const [custo, setCusto] = useState("");
-  const [dataCompra, setDataCompra] = useState("");
-  const [quantidade, setQuantidade] = useState("");
+export default function CadastroEstoque({ route, navigation }) {
+  const produtoExistente = route.params?.produto;
+  
+  const [nomeDoProduto, setNomeDoProduto] = useState(produtoExistente?.nomeDoProduto || "");
+  const [dataValidade, setDataValidade] = useState(produtoExistente?.dataValidade || "");
+  const [unidadeMedida, setUnidadeMedida] = useState(produtoExistente?.unidadeMedida || ""); // Novo estado para armazenar a unidade selecionada
+  const [quantidadeProdutoEstoque, setQuantidadeProdutoEstoque] = useState(produtoExistente?.quantidadeProdutoEstoque ? String(produtoExistente.quantidadeProdutoEstoque) : "");
+  const [custoProduto, setCustoProduto] = useState(produtoExistente?.custoProduto ? String(produtoExistente.quantidadeProdutoEstoque) : "");
+  const [dataCompraProduto, setDataCompraProduto] = useState(produtoExistente?.dataCompraProduto || "");
+
 
   const isFormValid = () => {
-    return produto && descricao && unidadeSelecionada && custo && dataCompra && quantidade;
+    return nomeDoProduto && unidadeMedida && quantidadeProdutoEstoque && custoProduto && dataCompraProduto;
   };
 
-  const handleSave = () => {
-    if (isFormValid()) {
-      Alert.alert("Sucesso", "Estoque cadastrado com sucesso!");
-      navigation.goBack();
-    } else {
-      Alert.alert("Erro", "Preencha todos os campos antes de salvar!");
+  const handleSave = async () => {
+    if (!isFormValid()) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      return;
+    }
+
+    const dados = {
+      nomeDoProduto,
+      dataValidade,
+      unidadeMedida,
+      quantidadeProdutoEstoque,
+      custoProduto,
+      dataCompraProduto,
+    };
+
+    try {
+      if (produtoExistente) {
+        await editarProdutoEstoque(produtoExistente.id, dados);
+        Alert.alert("Sucesso", "Produto atualizado com sucesso!");
+      } else {
+        await cadastrarProdutoEstoque(dados);
+        Alert.alert("Sucesso", "Produto cadastrado com sucesso!");
+      }
+      navigation.navigate("VizualizarEstoque", { reload: true });
+
+    } catch (error) {
+      console.error("Erro ao salvar produto no estoque", error.response?.data || error.message);
+      Alert.alert("Erro", error.response?.data?.error || "Erro ao salvar produto no estoque");
     }
   };
 
   const handleCheckboxChange = (unidade) => {
-    setUnidadeSelecionada(unidade); // Altera a unidade selecionada
+    setUnidadeMedida(unidade); // Altera a unidade selecionada
   };
 
   return (
@@ -41,8 +67,8 @@ export default function CadastroEstoque({ navigation }) {
           style={styles.input}
           placeholder="Nome do Produto"
           placeholderTextColor="#000"
-          value={produto}
-          onChangeText={setProduto}
+          value={nomeDoProduto}
+          onChangeText={setNomeDoProduto}
         />
       </View>
 
@@ -52,8 +78,8 @@ export default function CadastroEstoque({ navigation }) {
           style={styles.input}
           placeholder="Validade (DD/MM/AAAA)"
           placeholderTextColor="#000"
-          value={descricao}
-          onChangeText={setDescricao}
+          value={dataValidade}
+          onChangeText={setDataValidade}
         />
       </View>
 
@@ -62,7 +88,7 @@ export default function CadastroEstoque({ navigation }) {
         <View style={styles.checkboxGroup}>
           <CheckBox
             label="g"
-            checked={unidadeSelecionada === "g"}
+            checked={unidadeMedida === "g"}
             onChange={() => handleCheckboxChange("g")}
             containerStyle={styles.checkboxContainerStyle}
             labelStyle={styles.checkboxLabel}
@@ -71,7 +97,7 @@ export default function CadastroEstoque({ navigation }) {
         <View style={styles.checkboxGroup}>
           <CheckBox
             label="Kg"
-            checked={unidadeSelecionada === "Kg"}
+            checked={unidadeMedida === "Kg"}
             onChange={() => handleCheckboxChange("Kg")}
             containerStyle={styles.checkboxContainerStyle}
             labelStyle={styles.checkboxLabel}
@@ -80,7 +106,7 @@ export default function CadastroEstoque({ navigation }) {
         <View style={styles.checkboxGroup}>
           <CheckBox
             label="Ml"
-            checked={unidadeSelecionada === "Ml"}
+            checked={unidadeMedida === "Ml"}
             onChange={() => handleCheckboxChange("Ml")}
             containerStyle={styles.checkboxContainerStyle}
             labelStyle={styles.checkboxLabel}
@@ -89,7 +115,7 @@ export default function CadastroEstoque({ navigation }) {
         <View style={styles.checkboxGroup}>
           <CheckBox
             label="L"
-            checked={unidadeSelecionada === "L"}
+            checked={unidadeMedida === "L"}
             onChange={() => handleCheckboxChange("L")}
             containerStyle={styles.checkboxContainerStyle}
             labelStyle={styles.checkboxLabel}
@@ -101,10 +127,10 @@ export default function CadastroEstoque({ navigation }) {
         <Ionicons name="stats-chart" size={24} color="#4CAF50" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder= {`Quantidade (${unidadeSelecionada})`}
+          placeholder= {`Quantidade (${unidadeMedida})`}
           placeholderTextColor="#000"
-          value={quantidade}
-          onChangeText={setQuantidade}
+          value={quantidadeProdutoEstoque}
+          onChangeText={setQuantidadeProdutoEstoque}
           keyboardType="numeric"
         />
       </View>
@@ -115,8 +141,8 @@ export default function CadastroEstoque({ navigation }) {
           style={styles.input}
           placeholder="Custo do Produto"
           placeholderTextColor="#000"
-          value={custo}
-          onChangeText={setCusto}
+          value={custoProduto}
+          onChangeText={setCustoProduto}
           keyboardType="numeric"
         />
       </View>
@@ -127,8 +153,8 @@ export default function CadastroEstoque({ navigation }) {
           style={styles.input}
           placeholder="Data da Compra (DD/MM/AAAA)"
           placeholderTextColor="#000"
-          value={dataCompra}
-          onChangeText={setDataCompra}
+          value={dataCompraProduto}
+          onChangeText={setDataCompraProduto}
         />
       </View>
 

@@ -108,7 +108,7 @@ export default function WeatherForecastScreen() {
       case "chuva":
         return ["rainy", "#2196F3"];
       case "chuvas esparsas":
-        return ["partly-sunny", "#64B5F6"];
+        return ["rainy-outline", "#64B5F6"];
       case "chuviscos":
         return ["rainy-outline", "#81D4FA"];
       default:
