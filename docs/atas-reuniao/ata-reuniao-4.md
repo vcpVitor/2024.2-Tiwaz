@@ -1,24 +1,34 @@
-# Ata da Reunião 1 – Apresentação do Tema
+# Ata da Reunião 4 – Validação dos Requisitos
 
 **Data:** 14/12/2024 
 **Horário:** 14:00  
 **Local:** Teams   
-**Participantes:**  
+**Participantes:** 
+
 - Wildemberg Sales Da Silva Junior (Cliente)
+  
 - Artur Cardoso da Silva
+  
 - Mateus de Sousa Soares
+  
 - Thales Germano Vargas Lima
+  
 - Luis Felipe de Souza Braga
+  
 - Felipe Henrique Oliveira Sousa
+  
 - Joao Pedro Ferreira Moraes
+  
 - Davi Emanuel Ribeiro de Oliveira
+  
 - Gabriel Basto Bertolazi (Monitor)
+  
 ---
 
 ## **Pauta**
-- Validacao de Requsitos
-- Validacao de Historias de Usuarios
-- Validacao dos Cenarios
+- Validação dos Requisitos
+- Validação das Historias de Usuarios
+- Validação dos Cenarios
 ---
 
 ## **Discussões e Decisões**
