@@ -21,6 +21,8 @@ export default function HomeScreen({ navigation }) {
     temperature: 25,
     rainForecast: 2,
   });
+
+  
   const [statistics, setStatistics] = useState({
     totalPlantations: 10,
     totalProfit: 15000,

@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import HomeScreen from '../screens/Inicial'; 
 import CadastroPlantacao from '../screens/CadastroPlantacao'; 
 import CadastroEstoque from '../screens/CadastroEstoque';
@@ -84,31 +85,33 @@ const Navigation = () => {
         <Stack.Screen 
           name="VizualizarCustos" 
           component={VizualizarCustos} 
-          options={{
+          options={( {navigation} ) => ({
             title: "Gerenciar Custos",
             headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
             headerTintColor: "#000", // Cor do texto e ícones
-            headerLeft: ({ onPress }) => (
-              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
-                <Ionicons name="arrow-back" size={24} color="#000" />
+            headerRight: () => (
+              <TouchableOpacity 
+                onPress={() => navigation.navigate("HomeScreen")} 
+                style={{ 
+                  padding: 10 
+                }}>
               </TouchableOpacity>
             ),
-          }} 
-        />
+          })} />
         {/* TELA CADASTRO CUSTOS*/}
         <Stack.Screen 
           name="CadastroCusto" 
           component={CadastroCusto} 
-          options={{
+          options={({ navigation }) => ({
             title: "Cadastrar Novo Custo",
-            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
-            headerTintColor: "#000", // Cor do texto e ícones
-            headerLeft: ({ onPress }) => (
-              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
-                <Ionicons name="arrow-back" size={24} color="#000" />
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerRight: () => (
+              <TouchableOpacity onPress={() => navigation.navigate("VizualizarCustos")} 
+              style={{ padding: 10 }}>
               </TouchableOpacity>
             ),
-          }} 
+          })} 
         />
         {/* TELA RELATORIOS*/}
         <Stack.Screen 

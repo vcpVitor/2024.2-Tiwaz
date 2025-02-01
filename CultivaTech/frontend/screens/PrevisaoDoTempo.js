@@ -32,7 +32,8 @@ export default function WeatherForecastScreen() {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    setLocation(location.coords);
+    const teste = {"accuracy": 600, "altitude": 0, "altitudeAccuracy": 0, "heading": 0, "latitude": -15.833307382074835, "longitude": -48.04159216323175, "speed": 0};
+    setLocation(teste);
   };
 
   const translateWeekday = (weekday) => {
@@ -108,7 +109,7 @@ export default function WeatherForecastScreen() {
       case "chuva":
         return ["rainy", "#2196F3"];
       case "chuvas esparsas":
-        return ["partly-sunny", "#64B5F6"];
+        return ["rainy-outline", "#64B5F6"];
       case "chuviscos":
         return ["rainy-outline", "#81D4FA"];
       default:
