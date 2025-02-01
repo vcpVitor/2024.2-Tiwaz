@@ -30,7 +30,6 @@ const cadastrarProdutoEstoque = async (req, res) => { // Funcao que vai receber 
 
 const listarProdutosEstoque = async (req, res) => { // Funcao que vai receber a requisicao GET, chamar a service para listar e verificar, e retornar a resposta
   try {
-
     const produtos = await estoqueService.listarProdutosEstoque();
     res.status(200).json(produtos); 
   } catch (error) { 

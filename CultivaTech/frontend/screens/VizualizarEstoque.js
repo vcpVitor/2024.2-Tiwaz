@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,81 +6,94 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Modal,
 } from "react-native";
+import {getProdutosEstoque, excluirProdutoEstoque} from "../services/estoque";
 
 export default function GerenciarEstoque({ navigation }) {
-  const [estoque, setEstoque] = useState([
-    {
-      id: 1,
-      name: "Fertilizante NPK",
-      quantidade: "500 kg",
-      validade: "01/01/2026",
-      custo: "R$ 2.000,00",
-      dataCompra: "15/01/2025",
-    },
-    {
-      id: 2,
-      name: "Sementes de Milho",
-      quantidade: "200 sacas",
-      validade: "01/01/2027",
-      custo: "R$ 5.000,00",
-      dataCompra: "10/01/2025",
-    },
-    {
-      id: 3,
-      name: "Defensivo Agrícola",
-      quantidade: "100 litros",
-      validade: "01/12/2025",
-      custo: "R$ 1.500,00",
-      dataCompra: "05/01/2025",
-    },
-  ]);
+  const [estoque, setEstoque] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
-  const handleAction = (action, id) => {
-    console.log(`${action} do item com ID ${id}`);
-  };
+
+  const fetchEstoque = async () => {
+    setLoading(true);
+    try {
+      const data = await getProdutosEstoque();
+      setEstoque(data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos no estoque", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchEstoque();
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await excluirProdutoEstoque(selectedItemId);
+      fetchEstoque();
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Erro ao excluir produto do estoque", error);
+    }
+  }
+
+  const openModal = (id) => {
+    setSelectedItemId(id);
+    setModalVisible(true);
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         {estoque.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
-            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemName}>{item.nomeDoProduto}</Text>
             <View style={styles.itemDetails}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Quantidade: </Text>
-                  {item.quantidade}
+                  {item.quantidadeProdutoEstoque} {item.unidadeMedida}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Validade: </Text>
-                  {item.validade}
+                  {item.dataValidade}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Custo: </Text>
-                  {item.custo}
+                  {item.custoProduto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Data da Compra: </Text>
-                  {item.dataCompra}
+                  {item.dataCompraProduto}
                 </Text>
               </View>
             </View>
             <View style={styles.actionButtons}>
               <TouchableOpacity
-                onPress={() => handleAction("Editar", item.id)}
+                onPress={() => navigation.navigate("CadastroEstoque", {
+                  produto: {
+                    ...item,
+                    valorProduto: item.custoProduto,
+                  },
+                })}
                 style={styles.actionButton}
               >
                 <Text style={styles.actionButtonText}>Editar</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => handleAction("Excluir", item.id)}
+                onPress={() => openModal(item.id)}
                 style={[styles.actionButton, styles.deleteButton]}
               >
                 <Text style={styles.actionButtonText}>Excluir</Text>
@@ -89,6 +102,36 @@ export default function GerenciarEstoque({ navigation }) {
           </View>
         ))}
       </ScrollView>
+
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Confirmar Exclusão</Text>
+            <Text style={styles.modalText}>
+              Tem certeza que deseja excluir este custo?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmButton]}
+                onPress={handleDelete}
+              >
+                <Text style={styles.modalButtonText}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <TouchableOpacity
         style={styles.newItemButton}
@@ -166,6 +209,52 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   newItemButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    alignItems: "center",
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  cancelButton: {
+    backgroundColor: "#388E3C",
+  },
+  confirmButton: {
+    backgroundColor: "#F42310",
+  },
+  modalButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",

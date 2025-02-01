@@ -32,8 +32,7 @@ export default function WeatherForecastScreen() {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    const teste = {"accuracy": 600, "altitude": 0, "altitudeAccuracy": 0, "heading": 0, "latitude": -15.833307382074835, "longitude": -48.04159216323175, "speed": 0};
-    setLocation(teste);
+    setLocation(location.coords);
   };
 
   const translateWeekday = (weekday) => {
