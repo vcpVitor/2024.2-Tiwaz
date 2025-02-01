@@ -1,18 +1,26 @@
-# Ata da Reunião 1 – Apresentação do Tema
+# Ata da Reunião 5 – Validação do prototipo
 
 **Data:** 17/01/2025  
 **Horário:** 20:30   
 **Local:** Teams   
-**Participantes:**  
-- Wildemberg Sales Da Silva Junior (Cliente)
-- Joao Pedro Ferreira Moraes
-- Luis Felipe de Souza Braga
-- Thales Germano Vargas Lima
-- Mateus de Sousa Soares
-- Felipe Henrique Oliveira Sousa
-- Caua Reis
-- Gabriel Basto Bertolazi (Monitor)
+**Participantes:** 
 
+- Wildemberg Sales Da Silva Junior (Cliente)
+   
+- Joao Pedro Ferreira Moraes
+  
+- Luis Felipe de Souza Braga
+  
+- Thales Germano Vargas Lima
+
+- Mateus de Sousa Soares
+  
+- Felipe Henrique Oliveira Sousa
+  
+- Caua Reis
+  
+- Gabriel Basto Bertolazi (Monitor)
+  
 ---
 
 ### **Pauta**
