@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
-import { cadastrarCusto, atualizarCusto } from "../services/custos";
+import {cadastrarCusto, atualizarCusto} from "../services/custos";
 
 export default function CadastrarCustos({ route, navigation }) {
   const custoExistente = route.params?.custo;
@@ -22,21 +22,21 @@ export default function CadastrarCustos({ route, navigation }) {
     const match = date.match(regex);
     if (match) {
       const [, day, month, year] = match;
-      return `${year}-${month}-${day}`;
+      return `${day}/${month}/${year}`;
     }
     return null; // Retorna null se a data for inválida
   };
 
 
-  const [nome, setNome] = useState(custoExistente?.nome || "");
-  const [data, setData] = useState(custoExistente? formatDateForBackend(custoExistente.data) : "");
-  const [descricao, setDescricao] = useState(custoExistente?.descricao || "");
-  const [valorCusto, setValorCusto] = useState(
-    custoExistente?.valorCusto?.toString() || ""
+  const [nomeDoCusto, setNomeDoCusto] = useState(custoExistente?.nomeDoCusto || "");
+  const [dataDoCusto, setDataDoCusto] = useState(custoExistente?.dataDoCusto || "");
+  const [descricaoDoCusto, setDescricaoDoCusto] = useState(custoExistente?.descricaoDoCusto || "");
+  const [valorDoCusto, setValorDoCusto] = useState(
+    custoExistente?.valorDoCusto?.toString() || ""
   );
 
   const [open, setOpen] = useState(false);
-  const [tipoCusto, setTipoCusto] = useState(custoExistente?.tipoCusto || null);
+  const [tipoDoCusto, setTipoDoCusto] = useState(custoExistente?.tipoDoCusto || null);
   const [items, setItems] = useState([
     { label: "Maquinário", value: "Maquinario" },
     { label: "Funcionários", value: "Funcionarios" },
@@ -45,23 +45,23 @@ export default function CadastrarCustos({ route, navigation }) {
 
 
   const handleSave = async () => {
-    if (!nome || !data || !tipoCusto || !descricao || !valorCusto) {
+    if (!nomeDoCusto || !dataDoCusto || !tipoDoCusto || !descricaoDoCusto || !valorDoCusto) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
-    const dataFormatada = formatDateForBackend(data);
+    const dataFormatada = formatDateForBackend(dataDoCusto);
     if (!dataFormatada) {
       Alert.alert("Erro", "Por favor, insira uma data válida no formato DD/MM/AAAA.");
       return;
     }
 
     const dados = {
-      nome,
-      data: dataFormatada,
-      tipoCusto,
-      descricao,
-      valorCusto,
+      nomeDoCusto,
+      dataDoCusto: dataFormatada,
+      tipoDoCusto,
+      descricaoDoCusto,
+      valorDoCusto: parseFloat(valorDoCusto),
     };
 
     try {
@@ -96,8 +96,8 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Nome do Custo"
           placeholderTextColor="#000"
-          value={nome}
-          onChangeText={setNome}
+          value={nomeDoCusto}
+          onChangeText={setNomeDoCusto}
         />
       </View>
 
@@ -107,18 +107,18 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Data do Custo (DD/MM/AAAA)"
           placeholderTextColor="#000"
-          value={data}
-          onChangeText={setData}
+          value={dataDoCusto}
+          onChangeText={setDataDoCusto}
         />
       </View>
 
       <Text style={styles.subHeader}>Tipo do Custo:</Text>
       <DropDownPicker
         open={open}
-        value={tipoCusto}
+        value={tipoDoCusto}
         items={items}
         setOpen={setOpen}
-        setValue={setTipoCusto}
+        setValue={setTipoDoCusto}
         setItems={setItems}
         placeholder="Selecione o tipo do custo"
         style={styles.dropdown}
@@ -135,8 +135,8 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Descrição"
           placeholderTextColor="#000"
-          value={descricao}
-          onChangeText={setDescricao}
+          value={descricaoDoCusto}
+          onChangeText={setDescricaoDoCusto}
         />
       </View>
 
@@ -146,8 +146,8 @@ export default function CadastrarCustos({ route, navigation }) {
           style={styles.input}
           placeholder="Valor do Custo"
           placeholderTextColor="#000"
-          value={valorCusto}
-          onChangeText={setValorCusto}
+          value={valorDoCusto}
+          onChangeText={setValorDoCusto}
           keyboardType="numeric"
         />
       </View>

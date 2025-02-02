@@ -8,27 +8,19 @@ import {
   SafeAreaView,
   Modal,
 } from "react-native";
-import {getCustos, deleteCusto} from "../services/custos";
+import {getCustos, deleteCusto} from "../services/custos"; // Importando as funcoes de listar e excluir custos
 
 export default function GerenciarCustos({ navigation }) {
-  const [custos, setCustos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [custos, setCustos] = useState([]); // Estado para armazenar os valores dos custos
+  const [loading, setLoading] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal (confirmacao de exclusao)
+  const [selectedId, setSelectedId] = useState(null); // Estado para armazenar o id do item selecionado
 
-  const fetchCustos = async () => {
+  const fetchCustos = async () => { // Funcao para buscar os custos
     setLoading(true);
     try {
       const data = await getCustos();
-      const dataformata = data.map((item) => ({
-        ...item,
-        data: new Date(item.data).toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }),
-      }));
-      setCustos(dataformata); // Atualiza o estado com os custos da API
+      setCustos(data); // Atualiza o estado com os custos da API
     } catch (error) {
       console.error("Erro ao buscar custos:", error);
     } finally {
@@ -36,7 +28,7 @@ export default function GerenciarCustos({ navigation }) {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // Hook de efeito para buscar os custos
     fetchCustos();
   }, []);
 
@@ -50,7 +42,7 @@ export default function GerenciarCustos({ navigation }) {
     }
   };
 
-  const openModal = (id) => {
+  const openModal = (id) => { // Funcao para abrir o modal de confirmacao de exclusao
     setSelectedId(id);
     setModalVisible(true);
   };
@@ -61,30 +53,30 @@ export default function GerenciarCustos({ navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {custos.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
-            <Text style={styles.itemName}>{item.nome}</Text>
+            <Text style={styles.itemName}>{item.nomeDoCusto}</Text>
             <View style={styles.itemDetails}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Data: </Text>
-                  {item.data}
+                  {item.dataDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Tipo: </Text>
-                  {item.tipoCusto}
+                  {item.tipoDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Descrição: </Text>
-                  {item.descricao}
+                  {item.descricaoDoCusto}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailText}>
                   <Text style={styles.boldText}>Valor: </Text>
-                  {item.valorCusto}
+                  {item.valorDoCusto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </Text>
               </View>
             </View>
@@ -93,7 +85,7 @@ export default function GerenciarCustos({ navigation }) {
                 onPress={() => navigation.navigate("CadastroCusto", { 
                   custo: {
                     ...item,
-                    valorCusto: item.valorCusto.toString(),
+                    valorCusto: item.valorDoCusto.toString(),
                   },
                   })}
                 style={styles.actionButton}

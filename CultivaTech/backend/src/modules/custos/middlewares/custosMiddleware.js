@@ -1,15 +1,29 @@
-const validarCusto = (req, res, next) => { // Funcao que vai validar a requisicao
-    const { nome, data, tipoCusto, descricao, valorCusto } = req.body; // Pega os dados do corpo da requisicao
-  
-    if (!nome || !data || !tipoCusto || !descricao || !valorCusto) {
-      return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
+const validarCusto = (dadosCusto) => {
+    const {
+      nomeDoCusto,
+      dataDoCusto,
+      tipoDoCusto,
+      descricaoDoCusto,
+      valorDoCusto,
+    } = dadosCusto;
+
+    // Verifica campos obrigatórios
+    if (
+        !nomeDoCusto ||
+        !dataDoCusto ||
+        !tipoDoCusto ||
+        !descricaoDoCusto ||
+        !valorDoCusto
+    ) {
+        return { valido: false, mensagem: "Todos os campos são obrigatórios!" };
     }
-  
-    next();
-  };
-  
-  module.exports = {
-    validarCusto,
-  };
-  
-  app.use(express.json());
+
+    // Valida tipos (ex: quantidade deve ser número)
+    if (isNaN(valorDoCusto)) {
+        return { valido: false, mensagem: "Campos numéricos inválidos!" };
+    }
+
+    return { valido: true };
+};
+
+module.exports = validarCusto; // Exporta a função diretamente!

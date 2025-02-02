@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Base URL do backend
 const api = axios.create({
-  baseURL: "http://10.0.2.2:3000/api/estoque", // Altere para o IP correto caso use dispositivo físico
+  baseURL: "http://10.0.2.2:3000/api/estoque", // Altere para o IP correto caso use dispositivo físico (localhost)
 });
 
 
