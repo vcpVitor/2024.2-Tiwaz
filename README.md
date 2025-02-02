@@ -129,7 +129,7 @@ node app.js
 
 ## 📚 Documentação
 
-A documentação do projeto pode ser encontrada clicando [aqui]().
+A documentação do projeto pode ser encontrada clicando [aqui](https://fga0138-mds-ajax.github.io/2024.2-Tiwaz/).
 
 ## 📎 Extra
 
