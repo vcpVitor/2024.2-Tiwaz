@@ -1,5 +1,5 @@
 # 1 Visão Geral do Produto e do Projeto
-### Versão 1.6
+### Versão 1.8
 
 ## 1.1 Problema
 ### Contexto
@@ -732,7 +732,9 @@ Sistema: xxxx – Backlog do produto
 | 01/12/2024    | 1.1        | Adicionado o tópico de declaração do escopo do projeto com seus respectivos subtópicos | Mateus de Sousa Soares          |
 | 02/12/2024    | 1.2        | Formatação do documento.                                                      | Cauã Reis de Freitas            |
 | 17/12/2024    | 1.4        | Edição do backlog, cenários e histórias de usuário                            | Mateus de Sousa Soares          |
-| 19/02/2024    | 1.5        | Edição completa do documento, corrigindo as partes pontuadas pelo professor na correção | Joao Pedro Ferreira Moraes      |
-| 19/02/2024    | 1.6        | Adicao no GitHub | Joao Pedro Ferreira Moraes      |
+| 19/12/2024    | 1.5        | Edição completa do documento, corrigindo as partes pontuadas pelo professor na correção | Joao Pedro Ferreira Moraes      |
+| 19/12/2024    | 1.6        | Adicao no GitHub | Joao Pedro Ferreira Moraes      |
+| 10/01/2025    | 1.7        | Revisao com base na correcao do professor | Joao Pedro Ferreira Moraes      |
+| 30/01/2025    | 1.8        | Mudancas com base do andamento do projeto | Joao Pedro Ferreira Moraes      |
 
 
