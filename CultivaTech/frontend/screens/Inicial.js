@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { listarPlantacoes } from "../services/plantacaoService";
+
 
 export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
@@ -21,51 +23,59 @@ export default function HomeScreen({ navigation }) {
     temperature: 25,
     rainForecast: 2,
   });
+
   const [statistics, setStatistics] = useState({
-    totalPlantations: 10,
-    totalProfit: 15000,
+    totalPlantations: 0,
+    totalProfit: 0,
   });
+  
 
-  const recentPlantations = [
-    {
-      id: 1,
-      name: "Milho Safrinha",
-      type: "Grão",
-      measure: "2000 hectares",
-      status: "Em Crescimento",
-    },
-    {
-      id: 2,
-      name: "Tomate Cereja",
-      type: "Hortaliça",
-      measure: "5 hectares",
-      status: "Colhido",
-    },
-    {
-      id: 3,
-      name: "Soja Convencional",
-      type: "Grão",
-      measure: "15 hectares",
-      status: "Em Crescimento",
-    },
-  ];
+  const fetchPlantations = async () => {
+    try {
+        console.log("📌 Buscando plantações do backend...");
+        const response = await listarPlantacoes(); // Chama a API
 
+        if (!Array.isArray(response)) {
+            console.error("❌ Erro ao buscar plantações: Resposta inválida", response);
+            Alert.alert("Erro", "Formato de resposta inesperado do servidor.");
+            return;
+        }
+
+        console.log("✅ Plantações carregadas:", response);
+        setRecentPlantations(response);
+
+        setStatistics({
+            totalPlantations: response.length,
+            totalProfit: response.reduce((acc, plant) => acc + (plant.custoInicial || 0), 0),
+        });
+    } catch (error) {
+        console.error("❌ Erro ao listar plantações:", error);
+        Alert.alert("Erro", "Erro ao conectar com o servidor.");
+    }
+};
+
+
+  
+  const [recentPlantations, setRecentPlantations] = useState([]);
+  
   {/* Função que simula a atualização dos dados da tela. */}
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      Alert.alert("Atualizado", "Dados atualizados com sucesso!");
-    }, 1500);
-  }, []);
+    await fetchPlantations(); // Chama a API do backend ao atualizar
+    setRefreshing(false);
+}, []);
+
+  
 
   {/* Executa uma lógica sempre que a tela do componente recebe o foco, ou seja, quando o usuário navega para essa tela. */}
+
   useFocusEffect(
     React.useCallback(() => {
-      console.log("Tela recebeu foco - atualizando dados...");
+        fetchPlantations(); // Atualiza os dados sempre que a tela for focada
     }, [])
-  );
+);
 
+  
   const getStatusColor = (status) => {
     switch (status) {
       case "Em Crescimento":
@@ -162,44 +172,28 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.seeAllText}>Ver Todas</Text>
               </TouchableOpacity>
             </View>
+                  
+            {recentPlantations.length > 0 ? (
+    recentPlantations.map((plantation) => (
+        <View key={plantation.id} style={[styles.plantationItem, { padding: 12 }]}>
+            <View style={styles.plantationInfo}>
+                <Text style={styles.plantationName}>{plantation.nome}</Text>
+                <Text style={styles.plantationDetails}>
+                    {plantation.tipo} • {plantation.areaPlantada ? `${plantation.areaPlantada} hectares` : `${plantation.quantidadePlantada} unidades`}
+                </Text>
+                <Text style={[styles.statusText, { color: getStatusColor(plantation.status) }]}>
+                    {plantation.status}
+                </Text>
+            </View>
+        </View>
+    ))
+) : (
+    <Text style={{ textAlign: "center", color: "#888", marginTop: 10 }}>
+        Nenhuma plantação encontrada.
+    </Text>
+)}
 
-            {recentPlantations.map((plantation) => (
-              <View
-                key={plantation.id}
-                style={[styles.plantationItem, { padding: 12 }]}
-                activeOpacity={0.7}
-              >
-                <View style={styles.plantationInfo}>
-                  <View style={styles.plantationHeader}>
-                    <Ionicons
-                      name="leaf"
-                      size={24}
-                      color="#388E3C"
-                      style={styles.plantationIcon}
-                    />
-                    <View style={styles.plantationTitles}>
-                      <Text style={styles.plantationName}>
-                        {plantation.name}
-                      </Text>
-                      <Text style={styles.plantationDetails}>
-                        {plantation.type} • {plantation.measure}
-                      </Text>
-                    </View>
-                  </View>
 
-                  <View style={styles.plantationStatus}>
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(plantation.status) },
-                      ]}
-                    >
-                      {plantation.status}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
           </View>
 
           <View style={styles.quickActionsContainer}>
@@ -489,4 +483,3 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-

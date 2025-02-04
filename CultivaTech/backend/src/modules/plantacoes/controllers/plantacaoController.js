@@ -1,4 +1,5 @@
 const plantacaoService = require("../services/plantacaoService");
+const Plantacao = require("../models/Plantacao"); // Corrigir a importação do modelo
 
 // Cadastrar Plantação
 const cadastrarPlantacao = async (req, res) => {
@@ -31,28 +32,52 @@ const cadastrarPlantacao = async (req, res) => {
       data: novaPlantacao, // Retorno organizado dentro de `data`
     });
   } catch (error) {
-    console.error("❌ Erro ao cadastrar plantação:", error.stack);
+    console.error("Erro ao cadastrar plantação:", error.stack);
     return res.status(500).json({ success: false, error: "Erro ao cadastrar plantação!" });
   }
 };
 
-// Listar Plantações
 const listarPlantacoes = async (req, res) => {
   try {
-    const plantacoes = await plantacaoService.listarPlantacoes();
+      console.log("📌 Requisição recebida para listar plantações...");
 
-    console.log(` ${plantacoes.length} plantação(ões) listada(s)`);
+      // Verifica se o modelo Plantacao está definido
+      if (typeof Plantacao === "undefined") {
+          console.error("❌ Erro: Modelo 'Plantacao' não encontrado. Verifique a importação.");
+          return res.status(500).json({
+              success: false,
+              error: "Erro interno do servidor: Modelo 'Plantacao' não encontrado.",
+          });
+      }
 
-    return res.status(200).json({
-      success: true,
-      message: plantacoes.length > 0 ? "Plantações encontradas!" : "Nenhuma plantação encontrada.",
-      data: plantacoes,
-    });
+      // Busca todas as plantações no banco de dados
+      const plantacoes = await Plantacao.findAll();
+
+      if (!plantacoes || plantacoes.length === 0) {
+          console.warn("⚠️ Nenhuma plantação encontrada no banco.");
+          return res.status(200).json({
+              success: true,
+              message: "Nenhuma plantação encontrada.",
+              data: [],
+          });
+      }
+
+      console.log(`✅ ${plantacoes.length} plantações encontradas!`);
+      return res.status(200).json({
+          success: true,
+          message: "Plantações encontradas!",
+          data: plantacoes,
+      });
   } catch (error) {
-    console.error(" Erro ao listar plantações:", error.stack);
-    return res.status(500).json({ success: false, error: "Erro ao listar plantações!" });
+      console.error("❌ Erro ao listar plantações:", error.message || error);
+      return res.status(500).json({
+          success: false,
+          error: "Erro ao listar plantações!",
+          details: error.message || "Erro desconhecido.",
+      });
   }
 };
+
 
 // Atualizar Plantação
 const atualizarPlantacao = async (req, res) => {
