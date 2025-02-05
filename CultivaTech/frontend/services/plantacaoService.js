@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.0.139:3000/api/plantacoes"; // Substitua pelo IP correto do seu backend
+const API_URL = "http://192.168.0.139:3000/api/plantacoes"; // Para Android Emulator
 
 // Buscar todas as plantações
 export const listarPlantacao = async () => {
@@ -8,7 +8,7 @@ export const listarPlantacao = async () => {
     
     return await response.json();
   } catch (error) {
-    console.error("❌ Erro ao buscar plantações:", error);
+    console.error("Erro ao buscar plantações:", error);
     throw error;
   }
 };

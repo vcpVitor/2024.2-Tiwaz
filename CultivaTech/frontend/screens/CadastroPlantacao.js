@@ -19,7 +19,7 @@ export default function CadastroPlantacao({ navigation }) {
       Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
       return;
     }
-
+  
     try {
       const response = await cadastrarPlantacao({
         nome,
@@ -29,19 +29,22 @@ export default function CadastroPlantacao({ navigation }) {
         dataPlantio,
         custoInicial,
       });
-
-      if (response && response.id) {
+  
+      console.log("Resposta da API:", response);
+  
+      if (response.success && response.data?.id) {  // Verifica corretamente o ID retornado
         Alert.alert("Sucesso", "Plantação cadastrada com sucesso!");
-        navigation.goBack(); // Retorna para a tela anterior
+        navigation.goBack();
       } else {
-        throw new Error("Erro ao cadastrar");
+        console.warn("⚠️ Erro inesperado no cadastro:", response);
+        Alert.alert("Erro", response.error || "Erro ao cadastrar a plantação.");
       }
     } catch (error) {
       console.error("Erro no cadastro:", error);
       Alert.alert("Erro", "Não foi possível cadastrar a plantação.");
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image

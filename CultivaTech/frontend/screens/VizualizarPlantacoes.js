@@ -21,16 +21,16 @@ export default function GerenciarPlantacoes({ navigation }) {
     setLoading(true);
     try {
       const response = await listarPlantacoes();
-      console.log("📌 Dados recebidos do backend:", response);
+      console.log("Dados recebidos do backend:", response);
 
       if (response && response.success && Array.isArray(response.data)) {
         setPlantacoes(response.data);
       } else {
         setPlantacoes([]);
-        console.error("⚠️ Resposta inesperada do backend:", response);
+        console.error("Resposta inesperada do backend:", response);
       }
     } catch (error) {
-      console.error("❌ Erro ao listar plantações:", error);
+      console.error("Erro ao listar plantações:", error);
       Alert.alert("Erro", "Não foi possível carregar as plantações.");
       setPlantacoes([]); // Evita undefined
     } finally {
@@ -56,7 +56,7 @@ export default function GerenciarPlantacoes({ navigation }) {
               Alert.alert("Sucesso", "Plantação excluída com sucesso!");
               fetchPlantacoes(); // Atualiza a lista após exclusão
             } catch (error) {
-              console.error("❌ Erro ao excluir plantação:", error);
+              console.error("Erro ao excluir plantação:", error);
               Alert.alert("Erro", "Não foi possível excluir a plantação.");
             }
           },
