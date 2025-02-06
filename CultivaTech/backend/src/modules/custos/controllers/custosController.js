@@ -3,20 +3,15 @@ const custosService = require('../services/custosService');
 // Cadastrar Plantação
 const cadastrarCusto = async (req, res) => {
   try {
-    const { nome, data, tipoCusto, descricao, valorCusto } = req.body;
-
-    // Validação dos campos obrigatórios
-    if (!nome || !data || !tipoCusto || !descricao || !valorCusto) {
-      return res.status(400).json({ error: 'Todos os campos obrigatórios devem ser preenchidos!' });
-    }
+    const { nomeDoCusto, dataDoCusto, tipoDoCusto, descricaoDoCusto, valorDoCusto } = req.body;
 
     // Chama o serviço para cadastrar o custo
     const novoCusto = await custosService.cadastrarCusto({
-      nome,
-      data,
-      tipoCusto,
-      descricao,
-      valorCusto,
+      nomeDoCusto,
+      dataDoCusto,
+      tipoDoCusto,
+      descricaoDoCusto,
+      valorDoCusto,
     });
 
     res.status(201).json({
@@ -45,15 +40,15 @@ const listarCustos = async (req, res) => {
 const atualizarCusto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nome, data, tipoCusto, descricao, valorCusto } = req.body;
+    const { nomeDoCusto, dataDoCusto, tipoDoCusto, descricaoDoCusto, valorDoCusto } = req.body;
 
     // Chama o serviço para atualizar a plantação
     const custoAtualizado = await custosService.atualizarCustos(id, {
-      nome,
-      data,
-      tipoCusto,
-      descricao,
-      valorCusto,
+      nomeDoCusto,
+      dataDoCusto,
+      tipoDoCusto,
+      descricaoDoCusto,
+      valorDoCusto,
     });
 
     if (!custoAtualizado) {

@@ -1,7 +1,12 @@
 const Custos = require('../models/custosModels');
+const validarCusto = require('../middlewares/custosMiddleware');
 
 // Cadastrar custo
 const cadastrarCusto = async (dados) => {
+  const validacao = validarCusto(dados);
+  if (!validacao.valido) {
+    throw new Error(validacao.mensagem);
+  }
   return await Custos.create(dados);
 };
 
@@ -12,6 +17,11 @@ const listarCustos = async () => {
 
 // Atualizar Custos
 const atualizarCustos = async (id, dados) => {
+  const validacao = validarCusto(dados);
+  if (!validacao.valido) {
+    throw new Error(validacao.mensagem);
+  }
+  
   const custo = await Custos.findByPk(id);
 
   if (!custo) return null;

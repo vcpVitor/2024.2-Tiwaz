@@ -9,73 +9,100 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
+import {getPrevisao} from "../services/previsao"; // Importando a funcao de buscar a previsao do tempo
 
-const API_URL = "http://seu-backend.com/api/weather";
 
 export default function WeatherForecastScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [forecastData, setForecastData] = useState([]);
-  const [currentWeather, setCurrentWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [weatherData, setWeatherData] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const fetchWeatherData = async (location) => {
+
+  const loadLocation = async () => { // Funcao para carregar a localizacao do dispositivo
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permissão para acesso à localização negada");
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location.coords);
+  };
+
+  const fetchWeatherData = async () => { // Funcao para buscar os dados meteorologicos
     try {
-      const response = await fetch(`${API_URL}/forecast?location=${location}`);
-      const data = await response.json();
-      
-      const current = data.find(item => item.isCurrent);
-      const forecast = data.filter(item => !item.isCurrent);
-      
-      setCurrentWeather(current);
-      setForecastData(forecast);
+      if (!location) return;
+
+      const response = await getPrevisao(location.latitude, location.longitude);
+
+      if (response.error) {
+        setErrorMsg("Erro ao buscar dados meteorológicos");
+        return;
+      }
+
+      setWeatherData(response);
+
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível carregar os dados do clima");
-    } finally {
-      setLoading(false);
+      Alert.alert("Erro", "Não foi possível obter os dados meteorológicos");
     }
   };
 
-  const handleRefresh = async () => {
+  const onRefresh = useCallback(async () => { // Funcao que vai atualizar os dados meteorologicos, se tiver offline vai mostrar uma mensagem de erro
     setRefreshing(true);
     try {
-      const location = await getLocation();
-      await fetchWeatherData(location);
+      await loadLocation();
+      await fetchWeatherData();
       Alert.alert("Atualizado", "Dados atualizados com sucesso!");
     } catch (error) {
-      Alert.alert("Erro", error.message);
+      Alert.alert("Erro", "Falha ao atualizar dados");
     }
     setRefreshing(false);
-  };
-
-  const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') throw new Error('Permissão de localização negada');
-
-    let location = await Location.getCurrentPositionAsync({});
-    return `${location.coords.latitude},${location.coords.longitude}`;
-  };
+  }, [location]);
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const location = await getLocation();
-        await fetchWeatherData(location);
-      } catch (error) {
-        Alert.alert("Erro", error.message);
-        setLoading(false);
-      }
-    };
-    initialize();
+    loadLocation();
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    if (location) {
+      fetchWeatherData();
+    }
+  }, [location]);
+
+  const getWeatherIcon = (condition) => {
+    switch (condition.toLowerCase()) {
+      case "tempo limpo":
+        return ["sunny", "#FFD700"]; 
+      case "tempo nublado":
+        return ["cloud", "#90A4AE"]; 
+      case "chuva":
+        return ["rainy", "#2196F3"];
+      case "chuvas esparsas":
+        return ["rainy-outline", "#64B5F6"];
+      case "chuviscos":
+        return ["rainy-outline", "#81D4FA"];
+      default:
+        return ["cloud", "#90A4AE"];
+    }
+  };
+
+  if (errorMsg) {
+    return (
+      <View style={styles.container}>
+        <Text>{errorMsg}</Text>
+      </View>
+    );
+  }
+
+  if (!weatherData) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#388E3C" />
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Carregando dados meteorológicos...</Text>
       </View>
     );
   }
@@ -89,45 +116,53 @@ export default function WeatherForecastScreen() {
         <ScrollView
           contentContainerStyle={styles.container}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          {/* Componente de Clima Atual Atualizado */}
-          {currentWeather && (
-            <View style={styles.currentWeatherContainer}>
-              <Ionicons name={getWeatherIcon(currentWeather.condition)} size={64} color="#FFC107" />
-              <View style={styles.weatherDetails}>
-                <Text style={styles.currentCondition}>{currentWeather.condition}</Text>
-                <Text style={styles.currentTemperature}>
-                  {currentWeather.temperatureMax}°C
-                </Text>
-                <Text style={styles.weatherSubtext}>
-                  Próxima chuva: {currentWeather.rainProbability}%
-                </Text>
-              </View>
+          <View style={styles.currentWeatherContainer}>
+            <Ionicons
+              style={styles.iconWrapper} 
+              name={getWeatherIcon(weatherData.current.condition)[0]} 
+              size={64} 
+              color={getWeatherIcon(weatherData.current.condition)[1]}
+            />
+            <View style={styles.weatherDetails}>
+              <Text style={styles.locationName}>{weatherData.location}</Text>
+              <Text style={styles.currentCondition}>
+                {weatherData.current.condition}
+              </Text>
+              <Text style={styles.currentTemperature}>
+                {Math.round(weatherData.current.temperature)}°C
+              </Text>
+              <Text style={styles.weatherHumidity}>Umidade: {weatherData.current.humidity}%</Text>
+              <Text style={styles.weatherSubtext}>
+                Probabilidade de chuva: {weatherData.current.rainProbability}%
+              </Text>
             </View>
-          )}
+          </View>
 
-          {/* Lista de Previsão Atualizada */}
           <View style={styles.forecastContainer}>
-            <Text style={styles.forecastTitle}>Próximos 5 Dias</Text>
-            {forecastData.map((day, index) => (
+            <Text style={styles.forecastTitle}>Próximos 10 Dias</Text>
+            {weatherData.forecast.map((day, index) => (
               <View key={index} style={styles.forecastItem}>
                 <Ionicons
-                  name={getWeatherIcon(day.condition)}
+                  name={getWeatherIcon(day.condition)[0]}
                   size={32}
-                  color="#FFC107"
+                  color={getWeatherIcon(day.condition)[1]}
                 />
                 <View style={styles.forecastDetails}>
                   <Text style={styles.forecastDay}>
-                    {new Date(day.date).toLocaleDateString('pt-BR', { weekday: 'long' })}
+                    {day.day} - {day.date}
                   </Text>
                   <Text style={styles.forecastCondition}>{day.condition}</Text>
                   <Text style={styles.forecastTemperature}>
-                    {day.temperatureMin}°C - {day.temperatureMax}°C
+                    {day.temperature.min}°C - {day.temperature.max}°C
                   </Text>
                   <Text style={styles.forecastRain}>
                     Chance de chuva: {day.rainProbability}%
+                  </Text>
+                  <Text style={styles.forecastRain}>
+                    Umidade: {day.humidity}%
                   </Text>
                 </View>
               </View>
@@ -138,7 +173,6 @@ export default function WeatherForecastScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -153,33 +187,12 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
-  headerContainer: {
-    marginBottom: 20,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#ffffff",
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  subHeader: {
-    fontSize: 16,
-    color: "#ffffff",
-    textAlign: "center",
-    marginTop: 5,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
   currentWeatherContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 20,
+    padding: 25,
     borderRadius: 15,
     marginBottom: 20,
     ...Platform.select({
@@ -194,8 +207,15 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  iconWrapper: {
+    marginRight: 15,
+  },
+  locationName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#0288D1",
+  },
   weatherDetails: {
-    marginLeft: 15,
     alignItems: "flex-start",
   },
   currentCondition: {
@@ -204,19 +224,24 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   currentTemperature: {
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: "bold",
     color: "#388E3C",
     marginVertical: 5,
   },
+  weatherHumidity: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 5,
+  },
   weatherSubtext: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666",
   },
   forecastContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderRadius: 15,
-    padding: 15,
+    padding: 20,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -230,7 +255,7 @@ const styles = StyleSheet.create({
     }),
   },
   forecastTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 15,
@@ -247,7 +272,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   forecastDay: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#388E3C",
   },
@@ -260,7 +285,19 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   forecastRain: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#0288D1",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0288D1", // Fundo azul para dar um toque climático
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginTop: 20,
   },
 });
