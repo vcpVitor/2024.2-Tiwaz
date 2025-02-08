@@ -1,16 +1,23 @@
-# Ata da Reunião – Equipe Tiwaz
+# Ata da Reunião 3 – Equipe Tiwaz
 
 **Data:** 30 de novembro de 2024  
 **Horário:** 14h09  
 **Local:** Teams
 
 **Participantes:**  
-- Wildemberg Sales Da Silva Junior (Cliente) 
-- Mateus De Sousa Soares  
-- Luis Felipe De Souza Braga  
-- João Pedro Ferreira Moraes  
+
+- Wildemberg Sales Da Silva Junior (Cliente)
+   
+- Mateus De Sousa Soares
+   
+- Luis Felipe De Souza Braga
+    
+- João Pedro Ferreira Moraes
+
 - Thales Germano Vargas Lima
+  
 - Artur Cardoso da Silva
+  
 - Felipe Henrique Oliveira Sousa
 
 ---
