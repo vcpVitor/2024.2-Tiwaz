@@ -99,7 +99,7 @@ export default function GerenciarPlantacoes({ navigation }) {
 
   // Função para gerar relatório: navega para uma tela de relatório
   const handleRelatorio = (id) => {
-    navigation.navigate("RelatorioPlantacao", { plantacaoId: id });
+    navigation.navigate("Relatorios", { plantacaoId: id });
   };
 
   return (
