@@ -17,6 +17,7 @@ import VizualizarPlantacaoIndividual from '../screens/VizualizarPlantacaoIndivid
 import CadastroInsumos from '../screens/CadastroInsumos';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const Stack = createStackNavigator();
 
 const Navigation = () => {
@@ -161,7 +162,16 @@ const Navigation = () => {
         <Stack.Screen 
           name="CadastroColheita" 
           component={CadastroColheita} 
-          options={{ headerShown: false }} // Sem cabeçalho padrão
+          options={{
+            title: "Cadastrar Colheita",
+            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#000", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }} // Sem cabeçalho padrão
         />
       </Stack.Navigator>
     </NavigationContainer>

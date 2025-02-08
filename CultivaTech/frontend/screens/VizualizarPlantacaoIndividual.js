@@ -52,7 +52,7 @@ const CustomTable = ({ data, columns, onEdit }) => (
             onPress={() => onEdit(item.id)}
             style={styles.actionButton}
           >
-            <Ionicons name="pencil" size={18} color="#388E3C" />
+            <Ionicons name="pencil" size={20} color="#388E3C" />
           </TouchableOpacity>
         </View>
       </View>
@@ -157,7 +157,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
           data={insumos}
           columns={insumosColumns}
           onAdd={() => navigation.navigate("CadastroInsumos")}
-          onEdit={(id) => console.log(`Editar insumo ${id}`)}
+          onEdit={(id) => navigation.navigate("CadastroInsumos", { insumoId: id })}
         />
 
         <Section
