@@ -18,6 +18,7 @@ import CadastroInsumos from '../screens/CadastroInsumos';
 import { Ionicons } from '@expo/vector-icons';
 import EditarInsumos from '../screens/EditarInsumos';
 import EditarColheita from '../screens/EditarColheita';
+import EditarPlantacao from '../screens/EditarPlantacao';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,21 @@ const Navigation = () => {
           component={PrevisaoTempo} 
           options={{
             title: "Previsão do Tempo",
+            headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#4FC3F7", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#4FC3F7" />
+              </TouchableOpacity>
+            ),
+          }} 
+        />
+        {/* TELA EDITAR PLANTACAO*/}
+        <Stack.Screen 
+          name="EditarPlantacao" 
+          component={EditarPlantacao} 
+          options={{
+            title: "Editar Plantação",
             headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
             headerTintColor: "#4FC3F7", // Cor do texto e ícones
             headerLeft: ({ onPress }) => (
