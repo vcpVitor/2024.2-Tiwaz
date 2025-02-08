@@ -47,23 +47,3 @@ seeders/
 # Outros arquivos desnecessários
 coverage/
 .nyc_output/
-
-# Pastas específicas mencionadas
-@swc/helpers/
-brotli/
-clone/
-crypto-js/
-dfa/
-fast-deep-equal/
-fontkit/
-jpeg-exif/
-linebreak/
-pako/
-pdfkit/
-png-js/
-restructure/
-tiny-inflate/
-tslib/
-unicode-properties/
-unicode-trie/
-package-lock.json
