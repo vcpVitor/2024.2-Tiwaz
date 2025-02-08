@@ -10,7 +10,6 @@ import {
   Alert,
   RefreshControl,
   ActivityIndicator,
-  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -93,13 +92,6 @@ export default function WeatherForecastScreen() {
     }
     setRefreshing(false);
   }, [location]);
-
-  const forceLocationUpdate = async () => {
-    await loadLocation();
-    if (location) {
-      fetchWeatherData();
-    }
-  };
 
   useEffect(() => {
     loadLocation();
@@ -206,11 +198,6 @@ export default function WeatherForecastScreen() {
               </View>
             ))}
           </View>
-
-          <Button
-            title="Atualizar Localização"
-            onPress={forceLocationUpdate}
-          />
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
