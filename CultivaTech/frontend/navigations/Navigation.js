@@ -7,7 +7,6 @@ import HomeScreen from '../screens/Inicial';
 import CadastroPlantacao from '../screens/CadastroPlantacao'; 
 import CadastroEstoque from '../screens/CadastroEstoque';
 import CadastroCusto from '../screens/CadastroCusto';
-import GerenciarFinancas from '../screens/GerenciarFinancas';
 import Relatorios from '../screens/Relatorios';
 import VizualizarPlantacoes from '../screens/VizualizarPlantacoes';
 import VizualizarEstoque from '../screens/VizualizarEstoque';

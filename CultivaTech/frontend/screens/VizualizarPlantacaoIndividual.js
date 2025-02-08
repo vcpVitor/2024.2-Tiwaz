@@ -10,15 +10,20 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 // Componente de tabela customizado
-const CustomTable = ({ data, columns, onEdit, onDelete }) => (
+const CustomTable = ({ data, columns, onEdit }) => (
   <View style={styles.tableContainer}>
     <View style={styles.tableHeader}>
       {columns.map((column, index) => (
-        <Text key={index} style={[styles.headerCell, { flex: column.flex || 1 }]}>
+        <Text
+          key={index}
+          style={[styles.headerCell, { flex: column.flex || 1 }]}
+        >
           {column.label}
         </Text>
       ))}
-      <Text style={[styles.headerCell, { flex: 0.5 }]}>Ações</Text>
+      <Text style={[styles.headerCell, { flex: 0.5, textAlign: "center" }]}>
+        Ações
+      </Text>
     </View>
     {data.map((item, rowIndex) => (
       <View
@@ -37,18 +42,17 @@ const CustomTable = ({ data, columns, onEdit, onDelete }) => (
             {item[column.key]}
           </Text>
         ))}
-        <View style={[styles.actionsContainer, { flex: 0.5 }]}>
+        <View
+          style={[
+            styles.actionsContainer,
+            { flex: 0.5, justifyContent: "center" },
+          ]}
+        >
           <TouchableOpacity
             onPress={() => onEdit(item.id)}
             style={styles.actionButton}
           >
             <Ionicons name="pencil" size={18} color="#388E3C" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => onDelete(item.id)}
-            style={styles.actionButton}
-          >
-            <Ionicons name="trash" size={18} color="#E53935" />
           </TouchableOpacity>
         </View>
       </View>
@@ -69,8 +73,18 @@ export default function VisualizarPlantacao({ route, navigation }) {
   };
 
   const colheitas = [
-    { id: 1, date: "10/06/2025", quantity: "180 sacos", value: "R$ 90.000,00" },
-    { id: 2, date: "15/06/2025", quantity: "200 sacos", value: "R$ 100.000,00" },
+    {
+      id: 1,
+      date: "10/06/2025",
+      quantity: "180 sacos",
+      value: "R$ 90.000,00",
+    },
+    {
+      id: 2,
+      date: "15/06/2025",
+      quantity: "200 sacos",
+      value: "R$ 100.000,00",
+    },
   ];
 
   const colheitasColumns = [
@@ -87,7 +101,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
   const insumosColumns = [
     { key: "name", label: "Nome", flex: 1 },
     { key: "quantity", label: "Quantidade", flex: 1 },
-    { key: "cost", label: "Custo", flex: 1 },
+    { key: "cost", label: "Valor", flex: 1 },
   ];
 
   const custosAdicionais = [
@@ -101,7 +115,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
     { key: "date", label: "Data", flex: 1 },
   ];
 
-  const Section = ({ title, data, columns, onAdd, onEdit, onDelete }) => (
+  const Section = ({ title, data, columns, onAdd, onEdit }) => (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
@@ -109,12 +123,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
           <Ionicons name="add" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
-      <CustomTable
-        data={data}
-        columns={columns}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      <CustomTable data={data} columns={columns} onEdit={onEdit} />
     </View>
   );
 
@@ -126,8 +135,12 @@ export default function VisualizarPlantacao({ route, navigation }) {
         </View>
         <View style={styles.detailsContainer}>
           <Text style={styles.detailText}>Tipo: {plantacao.type}</Text>
-          <Text style={styles.detailText}>Área Plantada: {plantacao.measure}</Text>
-          <Text style={styles.detailText}>Data do Plantio: {plantacao.plantingDate}</Text>
+          <Text style={styles.detailText}>
+            Área Plantada: {plantacao.measure}
+          </Text>
+          <Text style={styles.detailText}>
+            Data do Plantio: {plantacao.plantingDate}
+          </Text>
           <Text style={styles.detailText}>Custo Inicial: {plantacao.cost}</Text>
         </View>
 
@@ -137,7 +150,6 @@ export default function VisualizarPlantacao({ route, navigation }) {
           columns={colheitasColumns}
           onAdd={() => navigation.navigate("CadastroColheita")}
           onEdit={(id) => console.log(`Editar colheita ${id}`)}
-          onDelete={(id) => console.log(`Excluir colheita ${id}`)}
         />
 
         <Section
@@ -146,7 +158,6 @@ export default function VisualizarPlantacao({ route, navigation }) {
           columns={insumosColumns}
           onAdd={() => navigation.navigate("CadastroInsumos")}
           onEdit={(id) => console.log(`Editar insumo ${id}`)}
-          onDelete={(id) => console.log(`Excluir insumo ${id}`)}
         />
 
         <Section
@@ -155,7 +166,6 @@ export default function VisualizarPlantacao({ route, navigation }) {
           columns={custosColumns}
           onAdd={() => navigation.navigate("CadastroCusto")}
           onEdit={(id) => console.log(`Editar custo adicional ${id}`)}
-          onDelete={(id) => console.log(`Excluir custo adicional ${id}`)}
         />
       </ScrollView>
     </SafeAreaView>
@@ -253,7 +263,6 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
     alignItems: "center",
   },
   actionButton: {
