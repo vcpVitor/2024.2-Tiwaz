@@ -10,11 +10,11 @@ import {
   Alert,
   RefreshControl,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import * as Location from "expo-location";
-
 
 export default function WeatherForecastScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -25,14 +25,19 @@ export default function WeatherForecastScreen() {
   const API_URL = "http://10.0.2.2:3000/api/weather/"; // para rodar no celular "http://IP DO PC QUE ESTA RODANDO O BACK:3000/api/weather/"
 
   const loadLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permissão para acesso à localização negada");
-      return;
-    }
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permissão para acesso à localização negada");
+        return;
+      }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location.coords);
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location.coords);
+    } catch (error) {
+      console.error('Erro ao obter localização:', error);
+      setErrorMsg("Erro ao obter localização");
+    }
   };
 
   const translateWeekday = (weekday) => {
@@ -89,6 +94,13 @@ export default function WeatherForecastScreen() {
     setRefreshing(false);
   }, [location]);
 
+  const forceLocationUpdate = async () => {
+    await loadLocation();
+    if (location) {
+      fetchWeatherData();
+    }
+  };
+
   useEffect(() => {
     loadLocation();
   }, []);
@@ -102,9 +114,9 @@ export default function WeatherForecastScreen() {
   const getWeatherIcon = (condition) => {
     switch (condition.toLowerCase()) {
       case "tempo limpo":
-        return ["sunny", "#FFD700"]; 
+        return ["sunny", "#FFD700"];
       case "tempo nublado":
-        return ["cloud", "#90A4AE"]; 
+        return ["cloud", "#90A4AE"];
       case "chuva":
         return ["rainy", "#2196F3"];
       case "chuvas esparsas":
@@ -147,9 +159,9 @@ export default function WeatherForecastScreen() {
         >
           <View style={styles.currentWeatherContainer}>
             <Ionicons
-              style={styles.iconWrapper} 
-              name={getWeatherIcon(weatherData.current.condition)[0]} 
-              size={64} 
+              style={styles.iconWrapper}
+              name={getWeatherIcon(weatherData.current.condition)[0]}
+              size={64}
               color={getWeatherIcon(weatherData.current.condition)[1]}
             />
             <View style={styles.weatherDetails}>
@@ -194,6 +206,11 @@ export default function WeatherForecastScreen() {
               </View>
             ))}
           </View>
+
+          <Button
+            title="Atualizar Localização"
+            onPress={forceLocationUpdate}
+          />
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
