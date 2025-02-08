@@ -140,6 +140,24 @@ const Navigation = () => {
             ),
           }}
         />
+
+        {/* TELA RELATORIOS*/}
+        <Stack.Screen
+          name="Relatorios"
+          component={Relatorios}
+          options={{
+            title: "Relatorios",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+
         {/* TELA CADASTRO ESTOQUE*/}
         <Stack.Screen 
           name="CadastroEstoque" 
