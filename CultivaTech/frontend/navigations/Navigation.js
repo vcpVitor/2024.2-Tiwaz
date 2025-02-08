@@ -16,7 +16,7 @@ import VizualizarCustos from '../screens/VizualizarCustos';
 import VizualizarPlantacaoIndividual from '../screens/VizualizarPlantacaoIndividual';
 import CadastroInsumos from '../screens/CadastroInsumos';
 import { Ionicons } from '@expo/vector-icons';
-
+import EditarInsumos from '../screens/EditarInsumos';
 
 const Stack = createStackNavigator();
 
@@ -74,6 +74,20 @@ const Navigation = () => {
               </TouchableOpacity>
             ),
           }} 
+        />
+        <Stack.Screen
+          name="EditarInsumos"
+          component={EditarInsumos}
+          options={{
+            title: "Editar Insumo",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
         />
         {/* TELA CADASTRO ESTOQUE*/}
         <Stack.Screen 

@@ -157,7 +157,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
           data={insumos}
           columns={insumosColumns}
           onAdd={() => navigation.navigate("CadastroInsumos")}
-          onEdit={(id) => navigation.navigate("CadastroInsumos", { insumoId: id })}
+          onEdit={(id) => navigation.navigate("EditarInsumos", { insumoId: id })}
         />
 
         <Section
