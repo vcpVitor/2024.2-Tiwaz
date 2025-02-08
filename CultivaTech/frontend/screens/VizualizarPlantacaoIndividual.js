@@ -75,22 +75,28 @@ export default function VisualizarPlantacao({ route, navigation }) {
   const colheitas = [
     {
       id: 1,
-      date: "10/06/2025",
-      quantity: "180 sacos",
-      value: "R$ 90.000,00",
+      quality: 4,
+      harvestDate: "10/01/2025",
+      measurementType: "Área",
+      harvestAmount: "100 He",
+      harvestCost: "R$ 500,00",
+      saleValue: "R$ 1000,00",
     },
     {
       id: 2,
-      date: "15/06/2025",
-      quantity: "200 sacos",
-      value: "R$ 100.000,00",
+      quality: 3,
+      harvestDate: "12/01/2025",
+      measurementType: "Quantidade",
+      harvestAmount: "200 Kg",
+      harvestCost: "R$ 800,00",
+      saleValue: "R$ 1500,00",
     },
   ];
 
   const colheitasColumns = [
-    { key: "date", label: "Data", flex: 1 },
-    { key: "quantity", label: "Quantidade", flex: 1 },
-    { key: "value", label: "Valor Venda", flex: 1 },
+    { key: "harvestDate", label: "Data", flex: 1 },
+    { key: "harvestAmount", label: "Quantidade", flex: 1 },
+    { key: "saleValue", label: "Valor Venda", flex: 1 },
   ];
 
   const insumos = [
@@ -149,7 +155,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
           data={colheitas}
           columns={colheitasColumns}
           onAdd={() => navigation.navigate("CadastroColheita")}
-          onEdit={(id) => console.log(`Editar colheita ${id}`)}
+          onEdit={(id) => navigation.navigate("EditarColheita", { harvestId: id })}
         />
 
         <Section
