@@ -12,8 +12,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import * as Location from "expo-location";
+import {getPrevisao} from "../services/previsao"; // Importando a funcao de buscar a previsao do tempo
 
 export default function WeatherForecastScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -21,8 +21,8 @@ export default function WeatherForecastScreen() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const API_URL = "http://10.0.2.2:3000/api/weather/"; // para rodar no celular "http://IP DO PC QUE ESTA RODANDO O BACK:3000/api/weather/"
 
+  
   const loadLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -39,49 +39,25 @@ export default function WeatherForecastScreen() {
     }
   };
 
-  const translateWeekday = (weekday) => {
-    const days = {
-      Sun: "Domingo", Mon: "Segunda", Tue: "Terça",
-      Wed: "Quarta", Thu: "Quinta", Fri: "Sexta", Sat: "Sábado"
-    };
-    return days[weekday] || weekday;
-  };
-
-  const fetchWeatherData = async () => {
+  const fetchWeatherData = async () => { // Funcao para buscar os dados meteorologicos
     try {
       if (!location) return;
 
-      const response = await axios.get(API_URL, {
-        params: {
-          lat: location.latitude,
-          lon: location.longitude
-        }
-      });
-      const processedData = {
-        current: {
-          condition: response.data.current.description,
-          temperature: response.data.current.temperature.temp,
-          humidity: response.data.current.humidity,
-          rainProbability: response.data.current.rainProbability,
-        },
-        location: response.data.location,
-        forecast: response.data.forecast.map((day, index) => ({
-          day: index === 0 ? "Hoje" : translateWeekday(day.weekday),
-          date: day.date,
-          condition: day.condition,
-          temperature: { min: day.temperature.min, max: day.temperature.max },
-          rainProbability: day.rainProbability,
-          humidity: day.humidity
-        }))
-      };
+      const response = await getPrevisao(location.latitude, location.longitude);
 
-      setWeatherData(processedData);
+      if (response.error) {
+        setErrorMsg("Erro ao buscar dados meteorológicos");
+        return;
+      }
+
+      setWeatherData(response);
+
     } catch (error) {
       Alert.alert("Erro", "Não foi possível obter os dados meteorológicos");
     }
   };
 
-  const onRefresh = useCallback(async () => {
+  const onRefresh = useCallback(async () => { // Funcao que vai atualizar os dados meteorologicos, se tiver offline vai mostrar uma mensagem de erro
     setRefreshing(true);
     try {
       await loadLocation();
@@ -112,7 +88,7 @@ export default function WeatherForecastScreen() {
       case "chuva":
         return ["rainy", "#2196F3"];
       case "chuvas esparsas":
-        return ["partly-sunny", "#64B5F6"];
+        return ["rainy-outline", "#64B5F6"];
       case "chuviscos":
         return ["rainy-outline", "#81D4FA"];
       default:

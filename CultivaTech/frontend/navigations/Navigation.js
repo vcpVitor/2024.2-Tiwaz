@@ -2,11 +2,11 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import HomeScreen from '../screens/Inicial'; 
 import CadastroPlantacao from '../screens/CadastroPlantacao'; 
 import CadastroEstoque from '../screens/CadastroEstoque';
 import CadastroCusto from '../screens/CadastroCusto';
-import GerenciarFinancas from '../screens/GerenciarFinancas';
 import Relatorios from '../screens/Relatorios';
 import VizualizarPlantacoes from '../screens/VizualizarPlantacoes';
 import VizualizarEstoque from '../screens/VizualizarEstoque';
@@ -16,6 +16,10 @@ import VizualizarCustos from '../screens/VizualizarCustos';
 import VizualizarPlantacaoIndividual from '../screens/VizualizarPlantacaoIndividual';
 import CadastroInsumos from '../screens/CadastroInsumos';
 import { Ionicons } from '@expo/vector-icons';
+import EditarInsumos from '../screens/EditarInsumos';
+import EditarColheita from '../screens/EditarColheita';
+import EditarPlantacao from '../screens/EditarPlantacao';
+import EditarCusto from '../screens/EditarCusto';
 
 const Stack = createStackNavigator();
 
@@ -35,6 +39,21 @@ const Navigation = () => {
           component={PrevisaoTempo} 
           options={{
             title: "Previsão do Tempo",
+            headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#4FC3F7", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#4FC3F7" />
+              </TouchableOpacity>
+            ),
+          }} 
+        />
+        {/* TELA EDITAR PLANTACAO*/}
+        <Stack.Screen 
+          name="EditarPlantacao" 
+          component={EditarPlantacao} 
+          options={{
+            title: "Editar Plantação",
             headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
             headerTintColor: "#4FC3F7", // Cor do texto e ícones
             headerLeft: ({ onPress }) => (
@@ -74,6 +93,53 @@ const Navigation = () => {
             ),
           }} 
         />
+        {/* TELA EDITAR INSUMOS*/}
+        <Stack.Screen
+          name="EditarInsumos"
+          component={EditarInsumos}
+          options={{
+            title: "Editar Insumo",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+        {/* TELA EDITAR COLHEITA*/}
+        <Stack.Screen
+          name="EditarColheita"
+          component={EditarColheita}
+          options={{
+            title: "Editar Colheita",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+        {/* TELA EDITAR CUSTO*/}
+        <Stack.Screen
+          name="EditarCusto"
+          component={EditarCusto}
+          options={{
+            title: "Editar Custo",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
         {/* TELA CADASTRO ESTOQUE*/}
         <Stack.Screen 
           name="CadastroEstoque" 
@@ -84,31 +150,33 @@ const Navigation = () => {
         <Stack.Screen 
           name="VizualizarCustos" 
           component={VizualizarCustos} 
-          options={{
+          options={( {navigation} ) => ({
             title: "Gerenciar Custos",
             headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
             headerTintColor: "#000", // Cor do texto e ícones
-            headerLeft: ({ onPress }) => (
-              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
-                <Ionicons name="arrow-back" size={24} color="#000" />
+            headerRight: () => (
+              <TouchableOpacity 
+                onPress={() => navigation.navigate("HomeScreen")} 
+                style={{ 
+                  padding: 10 
+                }}>
               </TouchableOpacity>
             ),
-          }} 
-        />
+          })} />
         {/* TELA CADASTRO CUSTOS*/}
         <Stack.Screen 
           name="CadastroCusto" 
           component={CadastroCusto} 
-          options={{
+          options={({ navigation }) => ({
             title: "Cadastrar Novo Custo",
-            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
-            headerTintColor: "#000", // Cor do texto e ícones
-            headerLeft: ({ onPress }) => (
-              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
-                <Ionicons name="arrow-back" size={24} color="#000" />
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerRight: () => (
+              <TouchableOpacity onPress={() => navigation.navigate("VizualizarCustos")} 
+              style={{ padding: 10 }}>
               </TouchableOpacity>
             ),
-          }} 
+          })} 
         />
         {/* TELA RELATORIOS*/}
         <Stack.Screen 
@@ -159,7 +227,16 @@ const Navigation = () => {
         <Stack.Screen 
           name="CadastroColheita" 
           component={CadastroColheita} 
-          options={{ headerShown: false }} // Sem cabeçalho padrão
+          options={{
+            title: "Cadastrar Colheita",
+            headerStyle: { backgroundColor: "#E0E0E0" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#000", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }} // Sem cabeçalho padrão
         />
       </Stack.Navigator>
     </NavigationContainer>

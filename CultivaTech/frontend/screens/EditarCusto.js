@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,72 +12,87 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
-import {cadastrarCusto, atualizarCusto} from "../services/custos";
 
 export default function CadastrarCustos({ route, navigation }) {
-  const custoExistente = route.params?.custo;
+  const { custoId } = route.params;
 
-  const formatDateForBackend = (date) => {
-    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    const match = date.match(regex);
-    if (match) {
-      const [, day, month, year] = match;
-      return `${day}/${month}/${year}`;
-    }
-    return null; // Retorna null se a data for inválida
-  };
+  const custos = [
+    { 
+        id: 1,
+        nomeDoCusto: "Marcos", 
+        tipoDoCusto: "Funcionario",
+        descricaoDoCusto: "Marcos trabalhou na plantação de milho", 
+        valorDoCusto: "R$ 5.000,00", 
+        dataDoCusto: "05/01/2025" },
+    { 
+        id: 2, 
+        nomeDoCusto: "John Deere", 
+        tipoDoCusto: "Maquina", 
+        descricaoDoCusto: "Aluguel de trator para preparo do solo",
+        valorDoCusto: "R$ 12.000,00", 
+        dataDoCusto: "10/01/2025" },
+  ];
 
+  const custoToEdit = custos.find((item) => item.id === custoId);
 
-  const [nomeDoCusto, setNomeDoCusto] = useState(custoExistente?.nomeDoCusto || "");
-  const [dataDoCusto, setDataDoCusto] = useState(custoExistente?.dataDoCusto || "");
-  const [descricaoDoCusto, setDescricaoDoCusto] = useState(custoExistente?.descricaoDoCusto || "");
-  const [valorDoCusto, setValorDoCusto] = useState(
-    custoExistente?.valorDoCusto?.toString() || ""
-  );
+  if (!custoToEdit) {
+    Alert.alert("Erro", "Custo não encontrado.");
+    navigation.goBack();
+    return null;
+  }
+  const [nomeDoCusto, setNomeDoCusto] = useState(custoToEdit.nomeDoCusto);
+  const [dataDoCusto, setDataDoCusto] = useState(custoToEdit.dataDoCusto);
+  const [descricaoDoCusto, setDescricaoDoCusto] = useState(custoToEdit.descricaoDoCusto);
+  const [valorDoCusto, setValorDoCusto] = useState(custoToEdit.valorDoCusto);
 
+  // Estados para o DropDownPicker do tipo do custo
   const [open, setOpen] = useState(false);
-  const [tipoDoCusto, setTipoDoCusto] = useState(custoExistente?.tipoDoCusto || null);
+  const [tipoDoCusto, setTipoDoCusto] = useState(custoToEdit.tipoDoCusto);
   const [items, setItems] = useState([
-    { label: "Maquinário", value: "Maquinario" },
-    { label: "Funcionários", value: "Funcionarios" },
-    { label: "Outro", value: "Outro" },
+    { label: "Funcionario", value: "Funcionario" },
+    { label: "Maquina", value: "Maquina" },
+    { label: "Outros", value: "Outros" },
   ]);
 
-
-  const handleSave = async () => {
-    if (!nomeDoCusto || !dataDoCusto || !tipoDoCusto || !descricaoDoCusto || !valorDoCusto) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos.");
-      return;
-    }
-
-    const dataFormatada = formatDateForBackend(dataDoCusto);
-    if (!dataFormatada) {
-      Alert.alert("Erro", "Por favor, insira uma data válida no formato DD/MM/AAAA.");
-      return;
-    }
-
-    const dados = {
-      nomeDoCusto,
-      dataDoCusto: dataFormatada,
-      tipoDoCusto,
-      descricaoDoCusto,
-      valorDoCusto: parseFloat(valorDoCusto),
-    };
-
-    try {
-      if (custoExistente) {
-        await atualizarCusto(custoExistente.id, dados);
-        Alert.alert("Sucesso", "Custo atualizado com sucesso!");
-      } else {
-        await cadastrarCusto(dados);
-        Alert.alert("Sucesso", "Custo cadastrado com sucesso!");
-      }
-      navigation.navigate("VizualizarCustos", { reload: true });
-    } catch (error) {
-      console.error("Erro ao salvar custo:", error.response?.data || error.message);
-      Alert.alert("Erro", error.response?.data?.error || "Não foi possível salvar o custo.");
-    }
+  const isFormValid = () => {
+    return (
+      nomeDoCusto &&
+      dataDoCusto &&
+      descricaoDoCusto &&
+      valorDoCusto &&
+      tipoDoCusto
+    );
   };
+  const handleDelete = () => {
+    Alert.alert(
+      "Excluir Custo",
+      "Tem certeza que deseja excluir este custo?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          onPress: () => {
+            Alert.alert("Sucesso", "Custo excluído com sucesso!");
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  };
+
+  const handleSave = () => {
+    if (!isFormValid()) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+    // Simula o salvamento sem usar service externa
+    Alert.alert("Sucesso", "Custo atualizado com sucesso!");
+    navigation.goBack();
+  };
+
 
   return (
     <KeyboardAvoidingView
@@ -195,6 +210,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#333",
+  },
+  subHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: "#000",
   },
   dropdown: {
     backgroundColor: "#D9D9D9",
