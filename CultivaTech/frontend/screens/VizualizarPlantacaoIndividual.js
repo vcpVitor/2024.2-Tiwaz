@@ -171,7 +171,7 @@ export default function VisualizarPlantacao({ route, navigation }) {
           data={custosAdicionais}
           columns={custosColumns}
           onAdd={() => navigation.navigate("CadastroCusto")}
-          onEdit={(id) => console.log(`Editar custo adicional ${id}`)}
+          onEdit={(id) => navigation.navigate("EditarCusto", { custoId: id })}
         />
       </ScrollView>
     </SafeAreaView>

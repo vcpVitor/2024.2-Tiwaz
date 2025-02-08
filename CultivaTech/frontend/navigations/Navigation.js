@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import EditarInsumos from '../screens/EditarInsumos';
 import EditarColheita from '../screens/EditarColheita';
 import EditarPlantacao from '../screens/EditarPlantacao';
+import EditarCusto from '../screens/EditarCusto';
 
 const Stack = createStackNavigator();
 
@@ -114,6 +115,22 @@ const Navigation = () => {
           component={EditarColheita}
           options={{
             title: "Editar Colheita",
+            headerStyle: { backgroundColor: "#E0E0E0" },
+            headerTintColor: "#000",
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+
+        {/* TELA EDITAR CUSTO*/}
+        <Stack.Screen
+          name="EditarCusto"
+          component={EditarCusto}
+          options={{
+            title: "Editar Custo",
             headerStyle: { backgroundColor: "#E0E0E0" },
             headerTintColor: "#000",
             headerLeft: ({ onPress }) => (

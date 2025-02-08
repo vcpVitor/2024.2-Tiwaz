@@ -17,9 +17,9 @@ import { useFocusEffect } from "@react-navigation/native";
 export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [weatherData, setWeatherData] = useState({
-    condition: "Ensolarado",
-    temperature: 25,
-    rainForecast: 2,
+    condition: "Carregando...",
+    temperature: "--",
+    rainForecast: "--",
   });
 
 
@@ -51,7 +51,7 @@ export default function HomeScreen({ navigation }) {
       status: "Em Crescimento",
     },
   ];
-
+  
   {/* Função que simula a atualização dos dados da tela. */ }
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
