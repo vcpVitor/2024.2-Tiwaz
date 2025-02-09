@@ -14,6 +14,7 @@ import VizualizarEstoque from '../screens/VizualizarEstoque';
 import CadastroColheita from '../screens/CadastroColheita';
 import PrevisaoTempo from '../screens/PrevisaoDoTempo';
 import VizualizarCustos from '../screens/VizualizarCustos';
+import EditarPlantacao from '../screens/EditarPlantacao';
 import VizualizarPlantacaoIndividual from '../screens/VizualizarPlantacaoIndividual';
 import CadastroInsumos from '../screens/CadastroInsumos';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,21 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="HomeScreen">
+        {/* TELA EDITAR PLANTACAO*/}
+        <Stack.Screen 
+          name="EditarPlantacao" 
+          component={EditarPlantacao} 
+          options={{
+            title: "Editar Plantação",
+            headerStyle: { backgroundColor: "#E3F2FD" }, // Cor de fundo do cabeçalho
+            headerTintColor: "#4FC3F7", // Cor do texto e ícones
+            headerLeft: ({ onPress }) => (
+              <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+                <Ionicons name="arrow-back" size={24} color="#4FC3F7" />
+              </TouchableOpacity>
+            ),
+          }} 
+        />
         {/* TELA INICIAL*/}
         <Stack.Screen 
           name="HomeScreen" 

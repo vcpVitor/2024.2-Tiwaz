@@ -77,6 +77,48 @@ export default function GerenciarPlantacoes({ navigation }) {
     });
   };
 
+  const handleEditar = (plantacao) => {
+    navigation.navigate("CadastroPlantacao", { plantacaoId: plantacao.id, plantacaoData: plantacao });
+  };
+
+  // const handleFechar = (id) => {
+  //   Alert.alert("Confirmação", "Deseja fechar esta plantação?", [
+  //     { text: "Cancelar", style: "cancel" },
+  //     { text: "Fechar", onPress: () => Alert.alert("Sucesso", "Plantação fechada com sucesso!") },
+  //   ]);
+  // };
+
+  // Função para editar: navega para uma tela de edição
+  // const handleEditar = (id) => {
+  //   const plantacao = plantacoes.find((p) => p.id === id);
+  //   if (plantacao) {
+  //     navigation.navigate("CadastroPlantacao", { plantacao });
+  //   }
+  // };
+
+  // Função para fechamento: atualiza o status da plantação para "Fechado"
+  const handleFechar = (id) => {
+    Alert.alert(
+      "Fechamento",
+      "Deseja fechar esta plantação?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Confirmar",
+          onPress: () => {
+            setPlantacoes((prev) =>
+              prev.map((p) =>
+                p.id === id ? { ...p, status: "Fechado" } : p
+              )
+            );
+            Alert.alert("Sucesso", "Plantação fechada com sucesso!");
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -122,6 +164,14 @@ export default function GerenciarPlantacoes({ navigation }) {
                 </View>
               </View>
               <View style={styles.actionButtons}>
+                <TouchableOpacity onPress={() => handleEditar(plantacao)} style={styles.actionButtonEditar}>
+                  <Ionicons name="create" size={25} color="#1976D2" />
+                  <Text style={styles.actionText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleFechar(plantacao.id)} style={styles.actionButtonFechar}>
+                  <Ionicons name="lock-closed" size={25} color="#FBC02D" />
+                  <Text style={styles.actionText}>Fechar</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleExcluir(plantacao.id)}
                   style={styles.actionButtonExcluir}
@@ -162,6 +212,8 @@ const styles = StyleSheet.create({
   visualizarButton: { flexDirection: "row", alignItems: "center" },
   visualizarText: { fontSize: 16, color: "#388E3C", marginLeft: 5 },
   actionButtons: { flexDirection: "row", justifyContent: "space-around", marginTop: 15 },
+  actionButtonEditar: { alignItems: "center", paddingVertical: 10, width: 90 },
+  actionButtonFechar: { alignItems: "center", paddingVertical: 10, width: 90 },
   actionButtonExcluir: {
     alignItems: "center",
     backgroundColor: "#E0E0E0",
