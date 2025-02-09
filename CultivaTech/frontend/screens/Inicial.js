@@ -42,7 +42,7 @@ const fetchPlantations = async () => {
       setRecentPlantations(response.data); // Atualiza corretamente o estado
       setStatistics({
         totalPlantations: response.data.length,
-        totalProfit: response.data.reduce((acc, plant) => acc + (plant.custoInicial || 0), 0),
+        totalProfit: response.data.reduce((acc, plant) => acc - (plant.custoInicial || 0), 0),
       });
     } else {
       console.error("⚠️ Resposta inesperada do backend:", response);
@@ -94,11 +94,13 @@ useEffect(() => {
 
   {/*Formata números em valores monetários no padrão brasileiro (BRL, R$).*/}
   const formatCurrency = (value) => {
-    return value.toLocaleString("pt-BR", {
+    const formattedValue = Math.abs(value).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
+    return value < 0 ? `-${formattedValue}` : formattedValue;
   };
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
