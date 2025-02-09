@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -30,28 +30,31 @@ export default function HomeScreen({ navigation }) {
   });
   
 
-  const fetchPlantations = async () => {
-    try {
-        console.log("📌 Buscando plantações do backend...");
-        const response = await listarPlantacoes(); // Chama a API
+// Função para buscar plantações do backend
+const fetchPlantations = async () => {
+  setRefreshing(true); // Mostra que a tela está atualizando
+  try {
+    const response = await listarPlantacoes();
+    console.log("📌 Dados recebidos do backend:", response);
 
-        if (!Array.isArray(response)) {
-            console.error("❌ Erro ao buscar plantações: Resposta inválida", response);
-            Alert.alert("Erro", "Formato de resposta inesperado do servidor.");
-            return;
-        }
-
-        console.log("✅ Plantações carregadas:", response);
-        setRecentPlantations(response);
-
-        setStatistics({
-            totalPlantations: response.length,
-            totalProfit: response.reduce((acc, plant) => acc + (plant.custoInicial || 0), 0),
-        });
-    } catch (error) {
-        console.error("❌ Erro ao listar plantações:", error);
-        Alert.alert("Erro", "Erro ao conectar com o servidor.");
+    if (response && response.success && Array.isArray(response.data)) {
+      console.log("✅ Atualizando estado das plantações...");
+      setRecentPlantations(response.data); // Atualiza corretamente o estado
+      setStatistics({
+        totalPlantations: response.data.length,
+        totalProfit: response.data.reduce((acc, plant) => acc + (plant.custoInicial || 0), 0),
+      });
+    } else {
+      console.error("⚠️ Resposta inesperada do backend:", response);
+      setRecentPlantations([]);
     }
+  } catch (error) {
+    console.error("❌ Erro ao listar plantações:", error);
+    Alert.alert("Erro", "Não foi possível carregar as plantações.");
+    setRecentPlantations([]);
+  } finally {
+    setRefreshing(false);
+  }
 };
 
 
@@ -65,15 +68,17 @@ export default function HomeScreen({ navigation }) {
     setRefreshing(false);
 }, []);
 
-  
+useEffect(() => {
+  console.log("🧐 Estado atualizado - Plantações:", recentPlantations);
+}, [recentPlantations]);
 
   {/* Executa uma lógica sempre que a tela do componente recebe o foco, ou seja, quando o usuário navega para essa tela. */}
 
   useFocusEffect(
     React.useCallback(() => {
-        fetchPlantations(); // Atualiza os dados sempre que a tela for focada
+      fetchPlantations(); // Chama a função corretamente
     }, [])
-);
+  );
 
   
   const getStatusColor = (status) => {

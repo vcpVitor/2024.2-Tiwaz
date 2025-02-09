@@ -8,17 +8,6 @@ const api = axios.create({
   },
 });
 
-// Buscar todas as plantações
-export const listarPlantacao = async () => {
-  try {
-    const response = await api.get("/");
-    return response.data;
-  } catch (error) {
-    console.error("❌ Erro ao buscar plantações:", error?.response?.data || error.message);
-    return { success: false, error: error?.response?.data?.error || "Erro ao buscar plantações" };
-  }
-};
-
 // Cadastrar uma nova plantação
 export const cadastrarPlantacao = async (dados) => {
   try {
@@ -56,10 +45,12 @@ export const excluirPlantacao = async (id) => {
 export const listarPlantacoes = async () => {
   try {
     const response = await api.get("/");
+
     console.log("✅ Plantações carregadas:", response.data);
-    return response.data; // Retorna apenas a lista de plantações
+
+    return response.data; // Retorna o objeto completo com "data", "message" e "success"
   } catch (error) {
-    console.error("❌ Erro ao listar plantações:", error?.response?.data || error.message);
-    return []; // Retorna array vazio em caso de erro
+    console.error("❌ Erro ao listar plantações:", error);
+    return { data: [], message: "Erro ao buscar plantações", success: false };
   }
 };
