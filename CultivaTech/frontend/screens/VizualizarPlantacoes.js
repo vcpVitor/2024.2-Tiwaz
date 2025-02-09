@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native"; // Importação para atualizar ao voltar à tela
 import { Ionicons } from "@expo/vector-icons";
 import { listarPlantacoes, excluirPlantacao } from "../services/plantacaoService";
 
@@ -38,9 +39,12 @@ export default function GerenciarPlantacoes({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    fetchPlantacoes();
-  }, []);
+  // Atualiza a tela sempre que o usuário voltar para ela
+  useFocusEffect(
+    useCallback(() => {
+      fetchPlantacoes();
+    }, [])
+  );
 
   const handleExcluir = async (id) => {
     Alert.alert(
